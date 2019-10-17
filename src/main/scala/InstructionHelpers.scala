@@ -1,0 +1,41 @@
+import chisel3._
+
+import chisel3.util.{PriorityEncoderOH, Reverse}
+
+object InstructionHelpers {
+  def insn_rs(insn: UInt) = insn(25, 21)
+  def insn_rt(insn: UInt) = insn(25, 21)
+  def insn_ra(insn: UInt) = insn(20, 16)
+  def insn_rb(insn: UInt) = insn(15, 11)
+  def insn_si(insn: UInt) = insn(15, 0)
+  def insn_ui(insn: UInt) = insn(15, 0)
+  def insn_l(insn: UInt) = insn(21)
+  def insn_sh32(insn: UInt) = insn(15, 11)
+  def insn_mb32(insn: UInt) = insn(10, 6)
+  def insn_me32(insn: UInt) = insn(5, 1)
+  def insn_li(insn: UInt) = insn(25, 2)
+  def insn_lk(insn: UInt) = insn(0)
+  def insn_aa(insn: UInt) = insn(1)
+  def insn_rc(insn: UInt) = insn(0)
+  def insn_bd(insn: UInt) = insn(15, 2)
+  def insn_bf(insn: UInt) = insn(25, 23)
+  def insn_bfa(insn: UInt) = insn(20, 18)
+  /* These are BE bit fields */
+  def insn_fxm(insn: UInt) = Reverse(insn(19, 12))
+  def insn_fxm_onehot(insn: UInt) = PriorityEncoderOH(Reverse(insn(19, 12)))
+  def insn_bo(insn: UInt) = insn(25, 21)
+  def insn_bi(insn: UInt) = insn(20, 16)
+  def insn_bh(insn: UInt) = insn(12, 11)
+  def insn_d(insn: UInt) = insn(15, 0)
+  def insn_ds(insn: UInt) = insn(15, 2)
+  def insn_to(insn: UInt) = insn(25, 21)
+  def insn_bc(insn: UInt) = insn(10, 6)
+  def insn_sh(insn: UInt) = insn(1) ## insn(15, 11)
+  def insn_me(insn: UInt) = insn(5) ## insn(10, 6)
+  def insn_mb(insn: UInt) = insn(5) ## insn(10, 6)
+  def insn_spr(insn: UInt) = insn(15, 11) ## insn(20, 16)
+  def insn_lr(insn: UInt) = insn(0)
+  def insn_bt(insn: UInt) = insn(25, 21)
+  def insn_ba(insn: UInt) = insn(20, 16)
+  def insn_bb(insn: UInt) = insn(15, 11)
+}

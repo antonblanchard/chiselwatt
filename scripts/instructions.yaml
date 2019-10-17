@@ -1,0 +1,1793 @@
+# Add/sub
+addic:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  invertIn: N
+  carryIn: CA_0
+  carryOut: Y
+
+addic_dot:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_1
+  invertIn: N
+  carryIn: CA_0
+  carryOut: Y
+
+addi:
+  unit: U_ADD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  invertIn: N
+  carryIn: CA_0
+  carryOut: N
+
+addis:
+  unit: U_ADD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI_HI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  invertIn: N
+  carryIn: CA_0
+  carryOut: N
+
+subfic:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  invertIn: Y
+  carryIn: CA_1
+  carryOut: Y
+
+add:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: N
+  carryIn: CA_0
+  carryOut: N
+
+addc:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: N
+  carryIn: CA_0
+  carryOut: Y
+
+adde:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: N
+  carryIn: CA_CA
+  carryOut: Y
+
+addme:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_M1
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: N
+  carryIn: CA_CA
+  carryOut: Y
+
+addze:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_ZERO
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: N
+  carryIn: CA_CA
+  carryOut: Y
+
+subf:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  carryIn: CA_1
+  carryOut: N
+
+subfc:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  carryIn: CA_1
+  carryOut: Y
+
+subfe:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  carryIn: CA_CA
+  carryOut: Y
+
+subfme:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_M1
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  carryIn: CA_CA
+  carryOut: Y
+
+subfze:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_ZERO
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  carryIn: CA_CA
+  carryOut: Y
+
+neg:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_ZERO
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  invertIn: Y
+  invertOut: N
+  carryIn: CA_1
+  carryOut: N
+
+andi_dot:
+  unit: U_LOG
+  internalOp: LOG_AND
+  rB: RB_CONST_UI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_1
+  invertIn: N
+  invertOut: N
+
+andis_dot:
+  unit: U_LOG
+  internalOp: LOG_AND
+  rB: RB_CONST_UI_HI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_1
+  invertIn: N
+  invertOut: N
+
+# Logical
+and:
+  unit: U_LOG
+  internalOp: LOG_AND
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+
+andc:
+  unit: U_LOG
+  internalOp: LOG_AND
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: Y
+  invertOut: N
+
+nand:
+  unit: U_LOG
+  internalOp: LOG_AND
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: Y
+
+ori:
+  unit: U_LOG
+  internalOp: LOG_OR
+  rB: RB_CONST_UI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  invertIn: N
+  invertOut: N
+
+oris:
+  unit: U_LOG
+  internalOp: LOG_OR
+  rB: RB_CONST_UI_HI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  invertIn: N
+  invertOut: N
+
+nor:
+  unit: U_LOG
+  internalOp: LOG_OR
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: Y
+
+or:
+  unit: U_LOG
+  internalOp: LOG_OR
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+
+orc:
+  unit: U_LOG
+  internalOp: LOG_OR
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: Y
+  invertOut: N
+
+xori:
+  unit: U_LOG
+  internalOp: LOG_XOR
+  rB: RB_CONST_UI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  invertIn: N
+  invertOut: N
+
+xoris:
+  unit: U_LOG
+  internalOp: LOG_XOR
+  rB: RB_CONST_UI_HI
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  invertIn: N
+  invertOut: N
+
+eqv:
+  unit: U_LOG
+  internalOp: LOG_XOR
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: Y
+
+xor:
+  unit: U_LOG
+  internalOp: LOG_XOR
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+
+extsb:
+  unit: U_LOG
+  internalOp: LOG_EXTS
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+  length: LEN_1B
+
+extsh:
+  unit: U_LOG
+  internalOp: LOG_EXTS
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+  length: LEN_2B
+
+extsw:
+  unit: U_LOG
+  internalOp: LOG_EXTS
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  invertIn: N
+  invertOut: N
+  length: LEN_4B
+
+# Shift/rotate
+rlwimi:
+  unit: U_ROT
+  rA: RA_RA
+  rB: RB_CONST_SH32
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: RC
+  is32bit: Y
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rlwimi:
+  unit: U_ROT
+  rA: RA_RA
+  rB: RB_CONST_SH32
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rlwinm:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH32
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rlwnm:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rldic:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rldicl:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: N
+  carryOut: N
+
+rldicr:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: N
+  clearRight: Y
+  carryOut: N
+
+rldimi:
+  unit: U_ROT
+  rA: RA_RA
+  rB: RB_CONST_SH
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: Y
+  carryOut: N
+
+rldcl:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: Y
+  clearRight: N
+  carryOut: N
+
+rldcr:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: N
+  clearRight: Y
+  carryOut: N
+
+sld:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: N
+  clearLeft: N
+  clearRight: N
+  carryOut: N
+
+slw:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  rightShift: N
+  clearLeft: N
+  clearRight: N
+  carryOut: N
+
+srad:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: Y
+
+sradi:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: Y
+
+sraw:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: Y
+
+srawi:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_CONST_SH32
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: Y
+
+srd:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: N
+
+srw:
+  unit: U_ROT
+  rA: RA_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  rightShift: Y
+  clearLeft: N
+  clearRight: N
+  carryOut: N
+
+# Load/store
+lbz:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lbzu:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lha:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: Y
+  byteReverse: N
+  update: N
+  reservation: N
+
+lhau:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: Y
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lhz:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lhzu:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lwa:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_DS
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: Y
+  byteReverse: N
+  update: N
+  reservation: N
+
+lwz:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lwzu:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+ld:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_DS
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+ldu:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_DS
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lbarx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+lbzx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lbzux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lharx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+lhax:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: Y
+  byteReverse: N
+  update: N
+  reservation: N
+
+lhaux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: Y
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lhbrx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+lhzx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lhzux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lwarx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+lwax:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: Y
+  byteReverse: N
+  update: N
+  reservation: N
+
+lwaux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: Y
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+lwbrx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+lwzx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lwzux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+ldarx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+ldbrx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+ldx:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+ldux:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+stb:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stbu:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+sth:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+sthu:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+stw:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stwu:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_SI
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+std:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_DS
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stdu:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_CONST_DS
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+stbcx_dot:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+stbx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stbux:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+sthbrx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+sthcx_dot:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+sthx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+sthux:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+stwbrx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+stwcx_dot:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+stwx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stwux:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+stdbrx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: Y
+  update: N
+  reservation: N
+
+stdcx_dot:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: Y
+
+stdx:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stdux:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: Y
+  reservation: N
+  invertIn: N
+  carryIn: CA_0
+
+# Multiply
+mulli:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  is32bit: N
+  signed: Y
+  high: N
+
+mulhd:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  high: Y
+
+mulhdu:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  high: Y
+
+mulhw:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  high: Y
+
+mulhwu:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  high: Y
+
+mulld:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  high: N
+
+mullw:
+  unit: U_MUL
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  high: N
+
+# Divide
+divdeu:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  extended: Y
+
+divweu:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  extended: Y
+
+divde:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  extended: Y
+
+divwe:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  extended: Y
+
+divdu:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  extended: N
+
+divwu:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  extended: N
+
+divd:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  extended: N
+
+divw:
+  unit: U_DIV
+  internalOp: DIV_DIV
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  extended: N
+
+modud:
+  unit: U_DIV
+  internalOp: DIV_MOD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: N
+  extended: N
+
+moduw:
+  unit: U_DIV
+  internalOp: DIV_MOD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: N
+  extended: N
+
+modsd:
+  unit: U_DIV
+  internalOp: DIV_MOD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: N
+  signed: Y
+  extended: N
+
+modsw:
+  unit: U_DIV
+  internalOp: DIV_MOD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_RC
+  is32bit: Y
+  signed: Y
+  extended: N
+
+# cache control
+sync:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+isync:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+dcbf:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+dcbst:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+dcbt:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+dcbtst:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+icbi:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+icbt:
+  unit: U_NONE
+  compare: CMP_RC_0
+
+# Count leading/trailing zeroes
+cntlzd:
+  unit: U_ZER
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  countRight: N
+
+cntlzw:
+  unit: U_ZER
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  countRight: N
+
+cnttzd:
+  unit: U_ZER
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: N
+  countRight: Y
+
+cnttzw:
+  unit: U_ZER
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_RC
+  is32bit: Y
+  countRight: Y
+
+popcntb:
+  unit: U_POP
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  length: LEN_1B
+
+popcntw:
+  unit: U_POP
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  length: LEN_4B
+
+popcntd:
+  unit: U_POP
+  rS: RS_RS
+  rOut: ROUT_RA
+  compare: CMP_RC_0
+  length: LEN_8B
+
+cmpdi:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: N
+  signed: Y
+  compare: CMP_CMP
+
+cmpwi:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_SI
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: Y
+  signed: Y
+  compare: CMP_CMP
+
+cmpd:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: N
+  signed: Y
+  compare: CMP_CMP
+
+cmpw:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: Y
+  signed: Y
+  compare: CMP_CMP
+
+cmpldi:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_UI
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: N
+  signed: N
+  compare: CMP_CMP
+
+cmplwi:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_CONST_UI
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: Y
+  signed: N
+  compare: CMP_CMP
+
+cmpld:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: N
+  signed: N
+  compare: CMP_CMP
+
+cmplw:
+  unit: U_ADD
+  rA: RA_RA
+  rB: RB_RB
+  rOut: ROUT_NONE
+  invertIn: Y
+  carryIn: CA_1
+  crOut: Y
+  is32bit: Y
+  signed: N
+  compare: CMP_CMP
+
+mfspr:
+  unit: U_SPR
+  internalOp: SPR_MF
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+
+mtspr:
+  unit: U_SPR
+  internalOp: SPR_MT
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+
+mfcr:
+  unit: U_CR
+  internalOp: CR_MF
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  fxm: FXM_FF
+
+mfocrf:
+  unit: U_CR
+  internalOp: CR_MF
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  fxm: FXM_ONEHOT
+
+mtcrf:
+  unit: U_CR
+  internalOp: CR_MT
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  fxm: FXM
+
+mtocrf:
+  unit: U_CR
+  internalOp: CR_MT
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  fxm: FXM_ONEHOT
+
+b:
+  unit: U_BR
+  internalOp: BR_UNCOND
+  brTarget: BR_TARGET_NONE
+
+bc:
+  unit: U_BR
+  internalOp: BR_COND
+  brTarget: BR_TARGET_NONE
+
+bclr:
+  unit: U_BR
+  internalOp: BR_COND
+  brTarget: BR_TARGET_LR
+
+bcctr:
+  unit: U_BR
+  internalOp: BR_COND
+  brTarget: BR_TARGET_CTR
+
+# Just to get our test cases going for now
+tdi:
+  unit: U_NONE

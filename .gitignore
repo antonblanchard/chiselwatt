@@ -1,0 +1,7 @@
+project/
+target/
+obj_dir/
+out/
+*.anno.json
+*.fir
+*.vcd
