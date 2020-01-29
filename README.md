@@ -4,7 +4,18 @@ A tiny POWER Open ISA soft processor written in Chisel.
 
 ## Simulation using verilator
 
-* Chiselwatt uses verilator for simulation. Either install this from your distro or build it. Chisel uses sbt (the scala build tool), so install that too. Next build chiselwatt:
+* Chiselwatt uses verilator for simulation. Either install this from your
+distro or build it. Chisel uses sbt (the scala build tool), but unfortunately
+most of the distros package an ancient version. On Fedora you can install an
+upstream version using:
+
+```
+sudo dnf remove sbt
+sudo curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+sudo dnf --enablerepo=bintray--sbt-rpm install sbt
+```
+
+Next build chiselwatt:
 
 ```
 git clone https://github.com/antonblanchard/chiselwatt
@@ -59,19 +70,31 @@ amount of block RAM your FPGA supports, by editing `src/main/scala/Core.scala`. 
 ```
 
 Unfortunately due to an issue in yosys/nextpnr, dual port RAMs are not working. This means we use
-twice as much block RAM as you would expect.
+twice as much block RAM as you would expect. This also means Micropython likely won't fit (it needs
+384 kB).
+
+hello_world should run everywhere, so start with it. Edit `src/main/scala/Core.scala` and set memory
+to `8*1024`. Then copy in the hello_world image:
+
+```
+cp hello_world/hello_world.hex insns.hex
+```
 
 To build:
 
 ```
-make -f Makefile.synth
+make chiselwatt.bit
 ```
 
 and to program the FPGA:
 
 ```
-make -f Makefile.synth prog
+make prog
 ```
 
 ## Issues
-- We still have a few instructions to add
+Now that it is functional, we have a number of things to add
+- A few instructions
+- Wishbone interconnect
+- Caches
+- Pipelining and bypassing
