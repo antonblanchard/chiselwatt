@@ -8,7 +8,7 @@ module toplevel(
 	output io_ledC
 );
 
-wire clk_out;
+wire clock_out;
 wire reset_out;
 wire lock;
 
