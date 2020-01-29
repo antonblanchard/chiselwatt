@@ -61,7 +61,7 @@ scripts/bin2hex.py ../micropython/ports/powerpc/build/firmware.bin > insns.hex
 Synthesis on FPGAs is supported with yosys/nextpnr. It uses Docker images, so no software other
 than Docker needs to be installed. If you prefer podman you can use that too.
 
-Edit Makefile.synth to configure your FPGA, JTAG device etc. You will also need to configure the
+Edit Makefile to configure your FPGA, JTAG device etc. You will also need to configure the
 amount of block RAM your FPGA supports, by editing `src/main/scala/Core.scala`. Here we are using
 128kB of block RAM:
 
