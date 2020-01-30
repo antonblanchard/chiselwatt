@@ -62,7 +62,7 @@ void uart_tx(unsigned char tx)
 			tx_countbits--;
 			if (tx == 1) {
 				if (is_error(tx_countbits)) {
-					printf("START_BIT error %d %d\n", BITWIDTH, tx_countbits);
+					printf("START_BIT error %ld %ld\n", BITWIDTH, tx_countbits);
 					tx_countbits = BITWIDTH*2;
 					tx_state = ERROR;
 					break;
@@ -84,7 +84,7 @@ void uart_tx(unsigned char tx)
 
 			if (tx != tx_prev) {
 				if (is_error(tx_countbits)) {
-					printf("BITS error %d %d\n", BITWIDTH, tx_countbits);
+					printf("BITS error %ld %ld\n", BITWIDTH, tx_countbits);
 					tx_countbits = BITWIDTH*2;
 					tx_state = ERROR;
 					break;
@@ -104,7 +104,7 @@ void uart_tx(unsigned char tx)
 
 			if (tx == 0) {
 				if (is_error(tx_countbits)) {
-					printf("STOP_BIT error %d %d\n", BITWIDTH, tx_countbits);
+					printf("STOP_BIT error %ld %ld\n", BITWIDTH, tx_countbits);
 					tx_countbits = BITWIDTH*2;
 					tx_state = ERROR;
 					break;
