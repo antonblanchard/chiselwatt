@@ -25,6 +25,6 @@ module pll_ecp5_evn(input clki, output clko, output lock);
         .PHASEDIR(1'b0),
         .PHASESTEP(1'b0),
         .PLLWAKESYNC(1'b0),
-        .ENCLKOP(1'b0),
+        .ENCLKOP(1'b0)
     );
 endmodule

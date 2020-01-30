@@ -9,13 +9,13 @@ module toplevel(
 );
 
 wire clock_out;
-wire reset_out;
+logic reset_out;
 wire lock;
 
 pll_ecp5_evn pll(
 	.clki(clock),
 	.clko(clock_out),
-	.lock(lock),
+	.lock(lock)
 );
 
 Core core(
@@ -36,7 +36,7 @@ begin
 	begin
 		cnt <= ~0;
 	end
-	else if (cnt)
+	else if (cnt != 0)
 	begin
 		cnt <= cnt - 1;
 	end
