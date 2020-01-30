@@ -20,7 +20,7 @@ class SimpleDivider(val bits: Int) extends Module {
 
   val dividend = Reg(UInt((bits*2+1).W))
   val divisor = Reg(UInt(bits.W))
-  val quotient = Reg(UInt((bits+1).W))
+  val quotient = Reg(UInt(bits.W))
   val is32bit = Reg(Bool())
   //val signed = Reg(Bool())
   val modulus = Reg(Bool())
