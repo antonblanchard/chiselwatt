@@ -29,18 +29,18 @@ class MemoryBlackBox(val bits: Int, val words: Int, val filename: String) extend
       |    input writeEnable1,
       |    input [BITS/8-1:0] writeMask1,
       |    input [$$clog2(WORDS)-1:0] addr1,
-      |    output logic [BITS-1:0] readData1,
+      |    output reg [BITS-1:0] readData1,
       |    input [BITS-1:0] writeData1,
       |
       |    input readEnable2,
       |    input [$$clog2(WORDS)-1:0] readAddr2,
-      |    output logic [BITS-1:0] readData2
+      |    output reg [BITS-1:0] readData2
       |);
       |
       |integer i;
-      |logic [BITS-1:0] ram[0:WORDS-1];
+      |reg [BITS-1:0] ram[0:WORDS-1];
       |
-      |always_ff@(posedge clock)
+      |always@(posedge clock)
       |begin
       |    if (writeEnable1)
       |    begin

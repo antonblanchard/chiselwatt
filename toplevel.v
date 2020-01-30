@@ -9,7 +9,7 @@ module toplevel(
 );
 
 wire clock_out;
-logic reset_out;
+reg reset_out;
 wire lock;
 
 pll_ecp5_evn pll(
@@ -28,9 +28,9 @@ Core core(
 	.io_ledC(io_ledC)
 );
 
-logic [21:0] cnt = ~0;
+reg [21:0] cnt = ~0;
 
-always_ff@(posedge clock)
+always@(posedge clock)
 begin
 	if (~lock || ~reset)
 	begin
