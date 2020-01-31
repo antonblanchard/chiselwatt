@@ -1742,6 +1742,7 @@ mfcr:
   unit: U_CR
   internalOp: CR_MF
   rOut: ROUT_RT
+  crOut: N
   compare: CMP_RC_0
   fxm: FXM_FF
 
@@ -1749,6 +1750,7 @@ mfocrf:
   unit: U_CR
   internalOp: CR_MF
   rOut: ROUT_RT
+  crOut: N
   compare: CMP_RC_0
   fxm: FXM_ONEHOT
 
@@ -1757,6 +1759,7 @@ mtcrf:
   internalOp: CR_MT
   rS: RS_RS
   rOut: ROUT_NONE
+  crOut: Y
   compare: CMP_RC_0
   fxm: FXM
 
@@ -1765,6 +1768,7 @@ mtocrf:
   internalOp: CR_MT
   rS: RS_RS
   rOut: ROUT_NONE
+  crOut: Y
   compare: CMP_RC_0
   fxm: FXM_ONEHOT
 

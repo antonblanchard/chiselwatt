@@ -28,6 +28,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   val mem = Module(new MemoryBlackBoxWrapper(bits, memWords, memFileName))
   val loadStore = Module(new LoadStore(bits, memWords))
   val control = Module(new Control(bits))
+  val conditionRegisterUnit = Module(new ConditionRegisterUnit)
 
   val regFile = Module(new RegisterFile(32, bits, 3, 1, false))
   val carry = RegInit(0.U(1.W))
@@ -176,6 +177,15 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     loadStore.io.in.valid := true.B
   }
 
+  val fxm = MuxLookup(ctrl.fxm, "hFF".U, Array(
+    FXM -> insn_fxm(executeInsn),
+    FXM_ONEHOT -> { val f = insn_fxm_onehot(executeInsn); Mux(f === 0.U, "h80".U, f) }
+  ))
+
+  conditionRegisterUnit.io.fxm := fxm
+  conditionRegisterUnit.io.rs := executeRs
+  conditionRegisterUnit.io.conditionRegisterIn := conditionRegister
+
   val xerRegisterNum = 1
   val linkRegisterNum = 8
   val CountRegisterNum = 9
@@ -202,30 +212,6 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
       } .otherwise {
         illegal := true.B
       }
-    }
-  }
-
-  val crOut = RegInit(0.U(bits.W))
-  when (executeValid && (ctrl.unit === U_CR)) {
-    val fxm = WireDefault(UInt(8.W), 0.U)
-
-    when (ctrl.fxm === FXM_FF) {
-      fxm := "hFF".U
-    } .elsewhen (ctrl.fxm === FXM) {
-      fxm := insn_fxm(executeInsn)
-    } .elsewhen (ctrl.fxm === FXM_ONEHOT) {
-      val f = insn_fxm_onehot(executeInsn)
-      fxm := Mux(f === 0.U, "h80".U, f)
-    }
-
-    when (ctrl.internalOp === CR_MF) {
-      crOut := fxm.asBools.zip(conditionRegister).map({ case (f, c) =>
-        Mux(f, c, 0.U)
-      }).reduce(_ ## _)
-    } .elsewhen (ctrl.internalOp === CR_MT) {
-      conditionRegister := fxm.asBools.zip(conditionRegister).zip(executeRs(31, 0).nibbles().reverse).map({ case ((fxm, cr), reg) =>
-        Mux(fxm, reg, cr)
-      })
     }
   }
 
@@ -278,6 +264,8 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   val rotatorCarryOut = RegNext(rotator.io.carryOut)
   val populationCountOut = RegNext(populationCount.io.out)
   val countZeroesOut = RegNext(countZeroes.io.out)
+  val conditionRegisterGprOut = RegNext(conditionRegisterUnit.io.gprOut)
+  val conditionRegisterCrOut = RegNext(conditionRegisterUnit.io.conditionRegisterOut)
 
   when (executeValid && (ctrl.unit === U_ILL)) {
     illegal := true.B
@@ -315,6 +303,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     writebackRc := (ctrl.compare === CMP_RC_1) || ((ctrl.compare === CMP_RC_RC) && insn_rc(executeInsn).asBool)
   }
 
+  val writebackConditionRegisterWrite = RegNext(executeValid && (ctrl.unit === U_CR) && (ctrl.crOut === true.B))
   val writebackCmp = RegNext(ctrl.compare === CMP_CMP)
   val writebackCrField = RegNext(insn_bf(executeInsn))
   // Compare instructions need to know if a comparison is 32 bit
@@ -328,7 +317,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
                   U_POP -> populationCountOut,
                   U_ZER -> countZeroesOut,
                   U_SPR -> sprOut,
-                  U_CR  -> crOut,
+                  U_CR  -> conditionRegisterGprOut,
                   U_MUL -> multiplier.io.out.bits,
                   U_DIV -> divider.io.out.bits,
                   U_LDST -> loadStore.io.out.bits))
@@ -371,6 +360,8 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   } .elsewhen (writebackFastValid && writebackCmp) {
     conditionRegister(writebackCrField) :=
       cmp(wrData, adderLtOut, writebackIs32bit)
+  } .elsewhen (writebackConditionRegisterWrite) {
+    conditionRegister := conditionRegisterCrOut
   }
 
   val completed = RegNext(writebackFastValid || multiplier.io.out.valid || loadStore.io.out.valid || divider.io.out.valid)
