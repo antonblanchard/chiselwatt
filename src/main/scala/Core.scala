@@ -186,26 +186,22 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   conditionRegisterUnit.io.rs := executeRs
   conditionRegisterUnit.io.conditionRegisterIn := conditionRegister
 
-  val xerRegisterNum = 1
-  val linkRegisterNum = 8
-  val CountRegisterNum = 9
+  val xerRegisterNum = 1.U
+  val linkRegisterNum = 8.U
+  val countRegisterNum = 9.U
 
   val sprOut = RegInit(0.U(bits.W))
+  sprOut := MuxLookup(insn_spr(executeInsn), 0.U, Seq(
+    linkRegisterNum -> linkRegister,
+    countRegisterNum -> countRegister,
+    xerRegisterNum -> (carry << 29.U)
+  ))
+
   when (executeValid && (ctrl.unit === U_SPR)) {
-    when (ctrl.internalOp === SPR_MF) {
-      when (insn_spr(executeInsn) === linkRegisterNum.asUInt) {
-        sprOut := linkRegister
-      } .elsewhen (insn_spr(executeInsn) === CountRegisterNum.asUInt) {
-        sprOut := countRegister
-      } .elsewhen (insn_spr(executeInsn) === xerRegisterNum.asUInt) {
-        sprOut := carry << 29
-      } .otherwise {
-        illegal := true.B
-      }
-    } .elsewhen (ctrl.internalOp === SPR_MT) {
+    when (ctrl.internalOp === SPR_MT) {
       when (insn_spr(executeInsn) === linkRegisterNum.asUInt) {
         linkRegister := executeRs
-      } .elsewhen (insn_spr(executeInsn) === CountRegisterNum.asUInt) {
+      } .elsewhen (insn_spr(executeInsn) === countRegisterNum.asUInt) {
         countRegister := executeRs
       } .elsewhen (insn_spr(executeInsn) === xerRegisterNum.asUInt) {
         carry := executeRs(29)
