@@ -14,12 +14,12 @@ filesets:
   cmod_a7-35:
     files:
       - constraints/cmod_a7-35.xdc : {file_type : xdc}
-      - pll_mmcme2.v : {file_type : verilogSource}
+      - pll/pll_mmcme2.v : {file_type : verilogSource}
 
   ecp5-evn:
     files:
       - constraints/ecp5-evn.lpf : {file_type : LPF}
-      - pll_ecp5_evn.v : {file_type : verilogSource}
+      - pll/pll_ehxplll.v : {file_type : verilogSource}
 
 targets:
   cmod_a7-35:
