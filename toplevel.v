@@ -1,4 +1,6 @@
-module toplevel(
+module toplevel #(
+	parameter RESET_LOW = 1
+) (
 	input clock,
 	input reset,
 	output io_tx,
@@ -32,7 +34,7 @@ reg [21:0] cnt = ~0;
 
 always@(posedge clock)
 begin
-	if (~lock || ~reset)
+	if (~lock || (reset ^ RESET_LOW))
 	begin
 		cnt <= ~0;
 	end
