@@ -1,4 +1,4 @@
-module pll_ecp5_evn(input clki, output clko, output lock);
+module pll(input clki, output clko, output lock);
 
 wire clkfb;
 

@@ -1,4 +1,4 @@
-module pll_ecp5_evn(input clki, output clko, output lock);
+module pll(input clki, output clko, output lock);
     (* ICP_CURRENT="12" *) (* LPF_RESISTOR="8" *) (* MFG_ENABLE_FILTEROPAMP="1" *) (* MFG_GMCREF_SEL="2" *)
     EHXPLLL #(
         .PLLRST_ENA("DISABLED"),

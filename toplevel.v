@@ -14,7 +14,7 @@ wire clock_out;
 reg reset_out;
 wire lock;
 
-pll_ecp5_evn pll(
+pll chiselwatt_pll(
 	.clki(clock),
 	.clko(clock_out),
 	.lock(lock)
