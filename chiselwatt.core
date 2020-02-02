@@ -1,0 +1,45 @@
+CAPI=2:
+
+name : ::chiselwatt:0
+
+filesets:
+  core:
+    files:
+      - Core.v
+      - MemoryBlackBox.v
+      - toplevel.v
+      - insns.hex : {copyto : insns.hex, file_type : user}
+    file_type : verilogSource
+
+  cmod_a7-35:
+    files:
+      - constraints/cmod_a7-35.xdc : {file_type : xdc}
+      - pll/pll_mmcme2.v : {file_type : verilogSource}
+
+  ecp5-evn:
+    files:
+      - constraints/ecp5-evn.lpf : {file_type : LPF}
+      - pll/pll_ehxplll.v : {file_type : verilogSource}
+
+targets:
+  cmod_a7-35:
+    default_tool: vivado
+    filesets: [core, cmod_a7-35]
+    parameters :
+      - RESET_LOW=false
+    tools:
+      vivado: {part : xc7a35tcpg236-1}
+    toplevel : toplevel
+
+  ecp5-evn:
+    default_tool: diamond
+    filesets: [core, ecp5-evn]
+    tools:
+      diamond: {part: LFE5U-85F-8BG381I}
+    toplevel : toplevel
+
+parameters:
+  RESET_LOW:
+    datatype    : bool
+    description : External reset button polarity
+    paramtype   : generic

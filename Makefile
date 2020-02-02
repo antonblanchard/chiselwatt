@@ -68,8 +68,8 @@ OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
 
 synth: chiselwatt.bit
 
-chiselwatt.json: $(verilog_files) insns.hex pll_ecp5_evn.v toplevel.v
-	$(YOSYS) -p "read_verilog -sv pll_ecp5_evn.v toplevel.v Core.v MemoryBlackBox.v; synth_ecp5 -json $@ -top toplevel"
+chiselwatt.json: $(verilog_files) insns.hex pll/pll_ehxplll.v toplevel.v
+	$(YOSYS) -p "read_verilog -sv pll/pll_ehxplll.v toplevel.v Core.v MemoryBlackBox.v; synth_ecp5 -json $@ -top toplevel"
 
 chiselwatt_out.config: chiselwatt.json $(LPF)
 	$(NEXTPNR) --json $< --lpf $(LPF) --textcfg $@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
