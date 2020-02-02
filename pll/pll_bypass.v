@@ -1,7 +1,7 @@
 module pll(
   input  clki,
-  output clko,
-  output lock
+  output reg clko,
+  output reg lock
 );
 
   always @* begin
