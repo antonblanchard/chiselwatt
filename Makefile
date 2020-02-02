@@ -54,6 +54,7 @@ OPENOCD   = $(DOCKER) $(DOCKERARGS) --device /dev/bus/usb ghdl/synth:prog openoc
 
 # OrangeCrab with ECP85
 #LPF=constraints/orange-crab.lpf
+#PLL=pll/pll_bypass.v
 #PACKAGE=CSFBGA285
 #NEXTPNR_FLAGS=--um5g-85k --freq 50
 #OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
@@ -61,6 +62,7 @@ OPENOCD   = $(DOCKER) $(DOCKERARGS) --device /dev/bus/usb ghdl/synth:prog openoc
 
 # ECP5-EVN
 LPF=constraints/ecp5-evn.lpf
+PLL=pll/pll_ehxplll.v
 PACKAGE=CABGA381
 NEXTPNR_FLAGS=--um5g-85k --freq 12
 OPENOCD_JTAG_CONFIG=openocd/ecp5-evn.cfg
@@ -68,8 +70,8 @@ OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
 
 synth: chiselwatt.bit
 
-chiselwatt.json: $(verilog_files) insns.hex pll/pll_ehxplll.v toplevel.v
-	$(YOSYS) -p "read_verilog -sv pll/pll_ehxplll.v toplevel.v Core.v MemoryBlackBox.v; synth_ecp5 -json $@ -top toplevel"
+chiselwatt.json: insns.hex $(verilog_files) $(PLL) toplevel.v
+	$(YOSYS) -p "read_verilog -sv $(verilog_files) $(PLL) toplevel.v; synth_ecp5 -json $@ -top toplevel"
 
 chiselwatt_out.config: chiselwatt.json $(LPF)
 	$(NEXTPNR) --json $< --lpf $(LPF) --textcfg $@ $(NEXTPNR_FLAGS) --package $(PACKAGE)
