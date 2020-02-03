@@ -322,16 +322,20 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
 
   // Writeback
 
-  val wrData = MuxLookup(writebackUnit, adderOut, Array(
-                  U_LOG -> logicalOut,
-                  U_ROT -> rotatorOut,
-                  U_POP -> populationCountOut,
-                  U_ZER -> countZeroesOut,
-                  U_SPR -> sprOut,
-                  U_CR  -> crOut,
-                  U_MUL -> multiplier.io.out.bits,
-                  U_DIV -> divider.io.out.bits,
-                  U_LDST -> loadStore.io.out.bits))
+  val wrRcData = MuxLookup(writebackUnit, adderOut, Array(
+    U_LOG -> logicalOut,
+    U_ROT -> rotatorOut,
+    U_ZER -> countZeroesOut,
+    U_MUL -> multiplier.io.out.bits,
+    U_DIV -> divider.io.out.bits,
+  ))
+
+  val wrData = MuxLookup(writebackUnit, wrRcData, Array(
+    U_POP -> populationCountOut,
+    U_SPR -> sprOut,
+    U_CR  -> crOut,
+    U_LDST -> loadStore.io.out.bits,
+  ))
 
   when (writebackLoadStore) {
     regFile.io.wr(0).bits.addr := writebackLoadStoreAddr
@@ -367,10 +371,10 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   }
 
   when (writebackRc && (writebackFastValid || multiplier.io.out.valid || divider.io.out.valid)) {
-    conditionRegister(0) := cmp(wrData, wrData(bits-1).asBool, false.B)
+    conditionRegister(0) := cmp(wrRcData, wrRcData(bits-1).asBool, false.B)
   } .elsewhen (writebackFastValid && writebackCmp) {
     conditionRegister(writebackCrField) :=
-      cmp(wrData, adderLtOut, writebackIs32bit)
+      cmp(adderOut, adderLtOut, writebackIs32bit)
   }
 
   val sReset :: sFirst :: sRunning :: Nil = Enum(3)
