@@ -373,22 +373,22 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
       cmp(wrData, adderLtOut, writebackIs32bit)
   }
 
-  val completed = RegNext(writebackFastValid || multiplier.io.out.valid || loadStore.io.out.valid || divider.io.out.valid)
-
-  val sFirst :: sSecond :: sThird :: Nil = Enum(3)
-  val initState = RegInit(sFirst)
+  val sReset :: sFirst :: sRunning :: Nil = Enum(3)
+  val initState = RegInit(sReset)
   switch (initState) {
-    is (sFirst) {
-      initState := sSecond
+    is (sReset) {
+      initState := sFirst
     }
 
-    is (sSecond) {
-      initState := sThird
+    is (sFirst) {
+      initState := sRunning
     }
   }
 
+  val completed = RegNext((initState === sRunning) && (writebackFastValid || multiplier.io.out.valid || loadStore.io.out.valid || divider.io.out.valid))
+
   // One instruction in the entire pipeline at a time
-  nia.io.nia.ready := completed || (initState === sSecond)
+  nia.io.nia.ready := completed || (initState === sFirst)
 }
 
 object CoreObj extends App {
