@@ -1,11 +1,11 @@
 ## Clock signal 12 MHz
 set_property -dict { PACKAGE_PIN L17   IOSTANDARD LVCMOS33 } [get_ports { clock }];
-create_clock -add -name sys_clk_pin -period 83.33 -waveform {0 41.66} [get_ports {clock}];
-
-set_property -dict { PACKAGE_PIN J18   IOSTANDARD LVCMOS33 } [get_ports { io_tx }];
-set_property -dict { PACKAGE_PIN J17   IOSTANDARD LVCMOS33 } [get_ports { io_rx  }];
+create_clock -add -name sys_clk_pin -period 83.33 -waveform {0 41.66} [get_ports { clock }];
 
 set_property -dict { PACKAGE_PIN A18   IOSTANDARD LVCMOS33 } [get_ports { reset }];
+
+set_property -dict { PACKAGE_PIN J18   IOSTANDARD LVCMOS33 } [get_ports { io_tx }];
+set_property -dict { PACKAGE_PIN J17   IOSTANDARD LVCMOS33 } [get_ports { io_rx }];
 
 set_property -dict { PACKAGE_PIN A17   IOSTANDARD LVCMOS33 } [get_ports { io_terminate }];
 
