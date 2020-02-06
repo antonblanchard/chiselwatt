@@ -21,9 +21,9 @@ class LoadStoreInput(val bits: Int) extends Bundle {
  * Simple non pipelined load/store unit
  *
  * if load:
- *   1C: a+b,
- *   2C: load data
- *   3C: de align, byte swap or sign extend data
+ *   1C: a+b, load request
+ *   2C: load data comes back, de align, byte swap or sign extend data
+ *   3C: return data
  * 
  * if store:
  *   1C: a+b
@@ -50,12 +50,11 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
 
   val addr = Reg(UInt(bits.W))
   val data = Reg(UInt(bits.W))
-  val internalOp = Reg(UInt(2.W))
   val length = Reg(UInt(2.W))
   val signed = Reg(UInt(1.W))
   val byteReverse = Reg(UInt(1.W))
   val reservation = Reg(UInt(1.W))
-  val sIdle :: sAccess :: sLoadFormat :: Nil = Enum(3)
+  val sIdle :: sStoreAccess :: sLoadFormat :: sLoadReturn :: Nil = Enum(4)
   val state = RegInit(sIdle)
 
   val fifoLength = 128
@@ -79,12 +78,10 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
         val offset = a(log2Ceil(bits/8)-1, 0)*8.U
 
         addr := a
-        internalOp := io.in.bits.internalOp
         length := io.in.bits.length
         signed := io.in.bits.signed
         byteReverse := io.in.bits.byteReverse
         reservation := io.in.bits.reservation
-        state := sAccess
 
         when (io.in.bits.internalOp === LDST_STORE) {
           /* Byte swap or sign extend data. We never do both. */
@@ -95,44 +92,43 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
           } .otherwise {
             data := io.in.bits.data << offset
           }
+          state := sStoreAccess
+        } .otherwise {
+          io.mem.addr := a >> log2Ceil(bits/8).U
+          state := sLoadFormat
         }
       }
     }
 
-    is (sAccess) {
-      when (internalOp === LDST_STORE) {
-        val offset = addr(log2Ceil(bits/8)-1, 0)
-        val lookupTable = Seq(LEN_1B -> "h1".U, LEN_2B -> "h3".U, LEN_4B -> "hf".U, LEN_8B -> "hff".U)
-        val mask = Wire(UInt((bits/8).W))
-        mask := MuxLookup(length, lookupTable.head._2, lookupTable) << offset
+    is (sStoreAccess) {
+      val offset = addr(log2Ceil(bits/8)-1, 0)
+      val lookupTable = Seq(LEN_1B -> "h1".U, LEN_2B -> "h3".U, LEN_4B -> "hf".U, LEN_8B -> "hff".U)
+      val mask = Wire(UInt((bits/8).W))
+      mask := MuxLookup(length, lookupTable.head._2, lookupTable) << offset
 
-        /* UART */
-        when (addr(31, 8) === "hc00020".U) {
-          when (addr(7, 0) === "h00".U) {
-            /* TX */
-            uart.io.txQueue.valid := true.B
-            uart.io.txQueue.bits := data(7, 0)
-          } .elsewhen (addr === "hc0002018".U) {
-            /* clock divisor */
-            clockDivisor := data(7, 0)
-          } .otherwise {
-            /* ERROR */
-          }
+      /* UART */
+      when (addr(31, 8) === "hc00020".U) {
+        when (addr(7, 0) === "h00".U) {
+          /* TX */
+          uart.io.txQueue.valid := true.B
+          uart.io.txQueue.bits := data(7, 0)
+        } .elsewhen (addr === "hc0002018".U) {
+          /* clock divisor */
+          clockDivisor := data(7, 0)
         } .otherwise {
-          /* memory */
-          io.mem.addr := addr >> log2Ceil(bits/8).U
-          io.mem.writeEnable := true.B
-          io.mem.writeMask := mask
-          io.mem.writeData := data
+          /* ERROR */
         }
-
-        /* Done */
-        io.out.valid := true.B
-        state := sIdle
       } .otherwise {
+        /* memory */
         io.mem.addr := addr >> log2Ceil(bits/8).U
-        state := sLoadFormat
+        io.mem.writeEnable := true.B
+        io.mem.writeMask := mask
+        io.mem.writeData := data
       }
+
+      /* Done */
+      io.out.valid := true.B
+      state := sIdle
     }
 
     is (sLoadFormat) {
@@ -141,11 +137,11 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
 
       /* Byte swap or sign extend data. We never do both. */
       when (signed.asBool) {
-        io.out.bits := d.signExtend(length)
+        data := d.signExtend(length)
       } .elsewhen (byteReverse.asBool) {
-        io.out.bits := LoadStoreByteReverse(d, length)
+        data := LoadStoreByteReverse(d, length)
       } .otherwise {
-        io.out.bits := d.zeroExtend(length)
+        data := d.zeroExtend(length)
       }
 
       /* UART */
@@ -154,19 +150,25 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
           /* RX */
           when (uart.io.rxQueue.valid) {
             uart.io.rxQueue.ready := true.B
-            io.out.bits := uart.io.rxQueue.bits
+            data := uart.io.rxQueue.bits
           }
         } .elsewhen (addr(7, 0) === "h10".U) {
           /* Status */
-          io.out.bits := uart.io.txFull ## uart.io.rxFull ## uart.io.txEmpty ## uart.io.rxEmpty
+          data := uart.io.txFull ## uart.io.rxFull ## uart.io.txEmpty ## uart.io.rxEmpty
         } .elsewhen (addr(7, 0) === "h18".U) {
           /* clock divisor */
-          io.out.bits := clockDivisor
+          data := clockDivisor
         } .otherwise {
           /* ERROR */
-          io.out.bits := 0.U
+          data := 0.U
         }
       }
+
+      state := sLoadReturn
+    }
+
+    is (sLoadReturn) {
+      io.out.bits := data
 
       /* Done */
       io.out.valid := true.B
