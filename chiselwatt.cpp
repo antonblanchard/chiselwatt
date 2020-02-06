@@ -70,16 +70,16 @@ int main(int argc, char **argv)
 	while(!Verilated::gotFinish()) {
 		tick(top);
 
-		//VL_PRINTF("NIA  %" VL_PRI64 "x\n", top->Core__DOT__executeNia);
+		//VL_PRINTF("NIA  %" VL_PRI64 "x\r\n", top->Core__DOT__executeNia);
 
 		uart_tx(top->io_tx);
 		top->io_rx = uart_rx();
 
 		if (top->io_terminate) {
 			for (unsigned long j = 0; j < 32; j++)
-				VL_PRINTF("GPR%d %016" VL_PRI64 "X\n", j, top->Core__DOT__regFile__DOT__regs[j]);
+				VL_PRINTF("GPR%d %016" VL_PRI64 "X\r\n", j, top->Core__DOT__regFile__DOT__regs[j]);
 
-			VL_PRINTF("CR 00000000%01X%01X%01X%01X%01X%01X%01X%01X\n",
+			VL_PRINTF("CR 00000000%01X%01X%01X%01X%01X%01X%01X%01X\r\n",
 				top->Core__DOT__conditionRegister_0,
 				top->Core__DOT__conditionRegister_1,
 				top->Core__DOT__conditionRegister_2,
@@ -89,9 +89,9 @@ int main(int argc, char **argv)
 				top->Core__DOT__conditionRegister_6,
 				top->Core__DOT__conditionRegister_7);
 
-			VL_PRINTF("LR %016" VL_PRI64 "X\n",
+			VL_PRINTF("LR %016" VL_PRI64 "X\r\n",
 				  top->Core__DOT__linkRegister);
-			VL_PRINTF("CTR %016" VL_PRI64 "X\n",
+			VL_PRINTF("CTR %016" VL_PRI64 "X\r\n",
 				  top->Core__DOT__countRegister);
 
 			/*
