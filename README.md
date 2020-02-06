@@ -4,10 +4,9 @@ A tiny POWER Open ISA soft processor written in Chisel.
 
 ## Simulation using verilator
 
-* Chiselwatt uses `verilator` for simulation. Either install this from your
-distro or build it. Chisel uses sbt (the scala build tool), but unfortunately
-most of the distros package an ancient version. On Fedora you can install an
-upstream version using:
+* Chisel uses `sbt` (the scala build tool), but unfortunately most of the
+distros package an ancient version. On Fedora you can install an upstream
+version using:
 
 ```sh
 $ sudo dnf remove sbt
@@ -15,13 +14,14 @@ $ sudo curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-
 $ sudo dnf --enablerepo=bintray--sbt-rpm install sbt
 ```
 
-For `verilator` you can install it using:
+* Chiselwatt uses `verilator` for simulation. Either install this from your
+distro or build it. On Fedora you can install the distro version using:
 
 ```sh
 $ sudo dnf install verilator
 ```
 
-Next build chiselwatt:
+* Next build chiselwatt:
 
 ```sh
 $ git clone https://github.com/antonblanchard/chiselwatt
@@ -59,7 +59,9 @@ $ make CROSS_COMPILE=/usr/local/powerpc64le-power8--glibc--bleeding-edge-2018.11
 $ cd ../../../
 ```
 
-* Build chiselwatt, import the the micropython image and run it:
+* Build chiselwatt, import the the micropython image and run it. We use
+bin2hex.py to convert a binary file into a series of 64 bit hex values
+expected by the tools:
 
 ```sh
 $ cd chiselwatt
@@ -68,35 +70,28 @@ $ scripts/bin2hex.py ../micropython/ports/powerpc/build/firmware.bin > insns.hex
 $ ./chiselwatt
 ```
 
-## Synthesis
+## Synthesis using Open Source tools (yosys/nextpnr)
 
-Synthesis on FPGAs is supported with yosys/nextpnr. It uses Docker images, so no
-software other than Docker needs to be installed. If you prefer podman you can
-use that too, just adjust it in `Makefile`, `DOCKER=podman`).
+Synthesis on FPGAs is supported with yosys/nextpnr. At the moment the tools support
+Lattice ECP5 FPGAs.  It uses Docker images, so no software other than Docker needs
+to be installed. If you prefer podman you can use that too, just adjust it in
+`Makefile`, `DOCKER=podman`.
 
-Edit `Makefile` to configure your FPGA, JTAG device etc. You will also need to
-configure the amount of block RAM your FPGA supports, by editing `src/main/scala/Core.scala`.
-Here we are using 128kB of block RAM:
+Edit `Makefile` to configure your FPGA, JTAG device etc.
 
-```
-chisel3.Driver.execute(Array[String](), () => new Core(64, 128*1024, "insns.hex", 0x0))
-```
-For ECP5 FPGA use 8 KiB instead:
-
-```
-chisel3.Driver.execute(Array[String](), () => new Core(64, 8*1024, "insns.hex", 0x0))
-```
-
-Unfortunately due to an issue in yosys/nextpnr, dual port RAMs are not working.
-This means we use twice as much block RAM as you would expect. This also means
-Micropython likely won't fit (it needs 384 kB).
+### hello_world
 
 hello_world should run everywhere, so start with it. Edit `src/main/scala/Core.scala`
-and set memory to `8*1024`, as mentioned above for ECP5. Then copy in the
-hello_world image:
+and set memory to 16 kB (`16*1024`):
+
+```
+chisel3.Driver.execute(Array[String](), () => new Core(64, 16*1024, "insns.hex", 0x0))
+```
+
+Then link in the hello_world image:
 
 ```sh
-$ cp hello_world/hello_world.hex insns.hex
+$ ln -s hello_world/hello_world.hex insns.hex
 ```
 
 To build:
@@ -107,11 +102,47 @@ $ make chiselwatt.bit
 
 and to program the FPGA:
 
-```
+```sh
 $ make prog
 ```
 
-On an ECP5 board you can use a simple Python script to read from /dev/ttyUSB1:
+If you connect to the serial port of the FPGA at 115200 8n1, you should see "Hello World"
+and after that all input will be echoed to the output. On Linux, picocom can be used.
+Another option below is a simple python script.
+
+### Micropython
+
+Unfortunately due to an issue in yosys/nextpnr, dual port RAMs are not
+working. More details can be found in https://github.com/YosysHQ/yosys/issues/1101.
+This means we use twice as much block RAM as you would expect. This also means
+Micropython won't fit on an ECP5 85F, because the ~400kB of available BRAM is halved
+to ~200k. Micropython requires 384 kB.
+
+Once this is fixed, edit `src/main/scala/Core.scala` and set memory to 384 kB (`384*1024`):
+
+```
+chisel3.Driver.execute(Array[String](), () => new Core(64, 384*1024, "insns.hex", 0x0))
+```
+
+Then link in the micropython image:
+
+```sh
+$ ln -s micropython/firmware.hex insns.hex
+```
+
+To build:
+
+```sh
+$ make chiselwatt.bit
+```
+
+and to program the FPGA:
+
+```sh
+$ make prog
+```
+
+## Simple Python script for reading USB serial port
 
 ```python
 
@@ -133,24 +164,6 @@ while 1:
     while ser.inWaiting() > 0:
         byte = ser.read(1);
         print("%s" %(byte))
-```
-
-You must see:
-
-```
-$ ./read_serial.py
-
-H
-e
-l
-l
-o
- 
-W
-o
-r
-l
-d
 ```
 
 ## Issues
