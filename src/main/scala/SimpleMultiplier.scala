@@ -1,5 +1,5 @@
 import chisel3._
-import chisel3.util.{Valid, Decoupled}
+import chisel3.util.{Valid, Decoupled, log2Ceil}
 
 import Helpers._
 
@@ -23,6 +23,7 @@ class SimpleMultiplier(val bits: Int) extends Module {
   val high = Reg(Bool())
   val res = Reg(UInt((2*bits).W))
   val busy = RegInit(false.B)
+  val count = Reg(UInt(log2Ceil(bits+1).W))
 
   io.in.ready := !busy
 
@@ -49,6 +50,7 @@ class SimpleMultiplier(val bits: Int) extends Module {
     high := io.in.bits.high
     res := 0.U
     busy := true.B
+    count := 0.U
   }
 
   when (busy) {
@@ -57,18 +59,20 @@ class SimpleMultiplier(val bits: Int) extends Module {
     }
     b := b << 1
     a := a >> 1
+    count := count + 1.U
   }
 
-  io.out.bits := res
+  val result = WireDefault(res)
   when (high) {
     when (is32bit) {
-      io.out.bits := res(63, 32) ## res(63, 32)
+      result := res(63, 32) ## res(63, 32)
     } .otherwise {
-      io.out.bits := res(127, 64)
+      result := res(127, 64)
     }
   }
 
-  io.out.valid := (a === 0.U) && busy
+  io.out.bits := RegNext(result)
+  io.out.valid := RegNext((count === (bits+1).U) && busy)
   when (io.out.valid) {
     busy := false.B
   }

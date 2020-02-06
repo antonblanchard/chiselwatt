@@ -71,14 +71,15 @@ class SimpleDivider(val bits: Int) extends Module {
     overflow := quotient(63, 31).orR
   }
 
-  io.out.bits := quotient
+  val result = WireDefault(quotient)
   when (overflow) {
-    io.out.bits := 0.U
+    result := 0.U
   } .elsewhen (is32bit && !modulus) {
-    io.out.bits := 0.U(32.W) ## quotient(31, 0)
+    result := 0.U(32.W) ## quotient(31, 0)
   }
 
-  io.out.valid := (count === (bits+1).U) && busy
+  io.out.bits := RegNext(result)
+  io.out.valid := RegNext((count === (bits+1).U) && busy)
   when (io.out.valid) {
     busy := false.B
   }
