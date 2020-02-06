@@ -44,7 +44,6 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
   io.out.bits := 0.U
 
   io.mem.addr := 0.U
-  io.mem.readEnable := false.B
   io.mem.writeMask := 0.U
   io.mem.writeData := 0.U
   io.mem.writeEnable := false.B
@@ -132,7 +131,6 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
         state := sIdle
       } .otherwise {
         io.mem.addr := addr >> log2Ceil(bits/8).U
-        io.mem.readEnable := true.B
         state := sLoadFormat
       }
     }
@@ -194,7 +192,6 @@ class LoadStoreWrapper(val bits: Int, val size: Int, filename: String) extends M
 
   /* Fetch port is unused */
   mem.io.fetchPort.writeData := 0.U
-  mem.io.fetchPort.readEnable := false.B
   mem.io.fetchPort.writeEnable := false.B
   mem.io.fetchPort.addr := 0.U
   mem.io.fetchPort.writeMask := 0.U

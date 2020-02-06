@@ -19,11 +19,9 @@ class MemoryBlackBoxUnitTester extends FlatSpec with ChiselScalatestTester with 
   behavior of "MemoryBlackBox"
   it should "pass a unit test" in {
     test(new MemoryBlackBoxWrapper(bits, words, filename)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation, ClockInfoAnnotation(Seq(ClockInfo(period = 2))))) { m =>
-      m.io.fetchPort.readEnable.poke(true.B)
 
       m.io.fetchPort.addr.poke(0.U)
 
-      m.io.fetchPort.readEnable.expect(true.B)
       m.clock.step()
       m.io.fetchPort.readData.expect("h0001020304050607".U)
 

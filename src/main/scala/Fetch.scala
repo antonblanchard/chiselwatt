@@ -8,7 +8,6 @@ class Fetch(val bits: Int, val words: Int) extends Module {
     val mem = new MemoryPort(bits, words, false)
   })
 
-  io.mem.readEnable := true.B
   io.mem.addr := io.nia >> log2Ceil(bits/8)
 
   /* Issues with conditional entries in ports */
