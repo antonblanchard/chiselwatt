@@ -25,7 +25,7 @@ ${CHISELWATT_DIR}/chiselwatt 2> test.err | grep -v "^$" | grep -v GPR31 > test.o
 
 grep -v "^$" ${CHISELWATT_DIR}/tests/${TEST}.out | grep -v GPR31 | grep -v XER > exp.out
 
-diff -q test.out exp.out && echo "$TEST PASS" && exit 0
+diff --strip-trailing-cr -q test.out exp.out && echo "$TEST PASS" && exit 0
 
 cat test.err
 echo "$TEST FAIL ********"
