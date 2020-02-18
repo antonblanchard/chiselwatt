@@ -47,5 +47,5 @@ trait HasMacroParadise extends ScalaModule {
 object chiselwatt extends CrossSbtModule with HasChisel3 with HasChiselTests with HasXsource211 with HasMacroParadise {
   override def millSourcePath = super.millSourcePath
   def crossScalaVersion = "2.12.10"
+  def mainClass = Some("CoreObj")
 }
-

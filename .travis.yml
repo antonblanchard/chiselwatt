@@ -6,4 +6,4 @@ services: docker
 before_install: docker pull verilator/verilator:latest
 
 script:
-        docker run --rm -t -v `pwd`:/build -w /build --entrypoint /bin/bash verilator/verilator:latest -c "apt update && apt install -y default-jre-headless gnupg python3-pexpect && apt update && echo 'deb https://dl.bintray.com/sbt/debian /' | tee -a /etc/apt/sources.list.d/sbt.list && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 && apt update && apt install -y sbt && make && make check && ./scripts/test_micropython_long.py"
+        docker run --rm -t -v `pwd`:/build -w /build --entrypoint /bin/bash verilator/verilator:latest -c "apt update && apt install -y default-jre-headless python3-pexpect curl && make && make check && ./scripts/test_micropython_long.py"

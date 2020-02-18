@@ -7,7 +7,7 @@ verilog_files = Core.v MemoryBlackBox.v
 verilator_binary = chiselwatt
 
 $(verilog_files): $(scala_files)
-	sbt 'runMain CoreObj'
+	scripts/mill chiselwatt.run
 
 $(verilator_binary): $(verilog_files) chiselwatt.cpp uart.c
 	# Warnings disabled until we fix the Chisel issues
@@ -24,7 +24,7 @@ clean:
 	@rm -f LoadStoreInsns.hex MemoryBlackBoxInsns.hex
 
 scala_tests: $(verilator_binary)
-	sbt testOnly
+	scripts/mill chiselwatt.test
 
 tests = $(sort $(patsubst tests/%.out,%,$(wildcard tests/*.out)))
 
