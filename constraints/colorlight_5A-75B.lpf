@@ -1,0 +1,25 @@
+# All the I/Os on this board go through bidirectional level shifters that
+# appear to be hardwired as outputs. To get an input pin for UART RX, we
+# use the button I/O which is also routed to connector J19. The downside is
+# we can't use the button for reset.
+
+LOCATE COMP "clock" SITE "P6";
+IOBUF PORT "clock" IO_TYPE=LVCMOS33;
+
+# We need to assign reset to something to keep the tools happy
+LOCATE COMP "reset" SITE "F1";
+IOBUF PORT "reset" PULLMODE=UP IO_TYPE=LVCMOS33;
+
+LOCATE COMP "io_tx" SITE "F3";
+LOCATE COMP "io_rx" SITE "M13";
+
+IOBUF PORT "io_tx" IO_TYPE=LVCMOS33;
+IOBUF PORT "io_rx" IO_TYPE=LVCMOS33;
+
+LOCATE COMP "io_terminate" SITE "G3";
+LOCATE COMP "io_ledB" SITE "P11";
+LOCATE COMP "io_ledC" SITE "G2";
+
+IOBUF PORT "io_terminate" IO_TYPE=LVCMOS33;
+IOBUF PORT "io_ledB" IO_TYPE=LVCMOS25;
+IOBUF PORT "io_ledC" IO_TYPE=LVCMOS33;
