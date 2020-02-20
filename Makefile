@@ -68,6 +68,14 @@ NEXTPNR_FLAGS=--um5g-85k --freq 12
 OPENOCD_JTAG_CONFIG=openocd/ecp5-evn.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
 
+# Colorlight 5A-75B
+#LPF=constraints/colorlight_5A-75B.lpf
+#PLL=pll/pll_ehxplll_25MHz.v
+#PACKAGE=CABGA256
+#NEXTPNR_FLAGS=--25k --freq 25
+#OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
+#OPENOCD_DEVICE_CONFIG=openocd/LFE5U-25F.cfg
+
 synth: chiselwatt.bit
 
 chiselwatt.json: insns.hex $(verilog_files) $(PLL) toplevel.v
