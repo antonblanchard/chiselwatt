@@ -4,16 +4,6 @@ A tiny POWER Open ISA soft processor written in Chisel.
 
 ## Simulation using verilator
 
-* Chisel uses `sbt` (the scala build tool), but unfortunately most of the
-distros package an ancient version. On Fedora you can install an upstream
-version using:
-
-```sh
-$ sudo dnf remove sbt
-$ sudo curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
-$ sudo dnf --enablerepo=bintray--sbt-rpm install sbt
-```
-
 * Chiselwatt uses `verilator` for simulation. Either install this from your
 distro or build it. On Fedora you can install the distro version using:
 
