@@ -2,6 +2,7 @@ project/
 target/
 obj_dir/
 out/
+test_run_dir/
 *.anno.json
 *.fir
 *.vcd
