@@ -1,8 +1,6 @@
 import chisel3._
 import chisel3.util.{Valid, Decoupled, log2Ceil}
 
-import Helpers._
-
 class DividerInput(val bits: Int) extends Bundle {
   val dividend = UInt(bits.W)
   val divisor  = UInt(bits.W)
@@ -22,8 +20,11 @@ class SimpleDivider(val bits: Int) extends Module {
   val divisor = Reg(UInt(bits.W))
   val quotient = Reg(UInt(bits.W))
   val is32bit = Reg(Bool())
-  //val signed = Reg(Bool())
+  val negativeResult = Reg(Bool())
+  val signed = Reg(Bool())
   val modulus = Reg(Bool())
+  val overflow = Reg(UInt(1.W))
+  val overflow32 = Reg(UInt(1.W))
   val count = Reg(UInt(log2Ceil(bits+1).W))
   val busy = RegInit(false.B)
 
@@ -31,25 +32,38 @@ class SimpleDivider(val bits: Int) extends Module {
 
   when (io.in.valid && !busy) {
     when (io.in.bits.is32bit) {
-      when (io.in.bits.extended) {
-        dividend := io.in.bits.dividend(31, 0) ## 0.U(32.W)
+      val dividendTemp = WireDefault(io.in.bits.dividend(31, 0))
+      when (io.in.bits.signed) {
+        dividendTemp := io.in.bits.dividend(31, 0).asSInt.abs().asUInt
+        divisor := io.in.bits.divisor(31, 0).asSInt.abs().asUInt
+        negativeResult := (io.in.bits.dividend(31) =/= io.in.bits.divisor(31))
       } .otherwise {
-        dividend := io.in.bits.dividend(31, 0)
+        divisor := io.in.bits.divisor(31, 0)
+        negativeResult := 0.U
       }
-      divisor := io.in.bits.divisor(31, 0)
+
+      dividend := Mux(io.in.bits.extended, dividendTemp ## 0.U(32.W), dividendTemp)
     } .otherwise {
-      when (io.in.bits.extended) {
-        dividend := io.in.bits.dividend ## 0.U(bits.W)
+      val dividendTemp = WireDefault(io.in.bits.dividend)
+      when (io.in.bits.signed) {
+        dividendTemp := io.in.bits.dividend.asSInt.abs().asUInt
+        divisor := io.in.bits.divisor.asSInt.abs().asUInt
+        negativeResult := (io.in.bits.dividend(bits-1) =/= io.in.bits.divisor(bits-1))
       } .otherwise {
-        dividend := 0.U((bits+1).W) ## io.in.bits.dividend
+        divisor := io.in.bits.divisor
+        negativeResult := 0.U
       }
-      divisor := io.in.bits.divisor
+
+      dividend := Mux(io.in.bits.extended, dividendTemp ## 0.U(bits.W), dividendTemp)
     }
 
     is32bit := io.in.bits.is32bit
     quotient := 0.U
-    count := 0.U
+    signed := io.in.bits.signed
     modulus := io.in.bits.modulus
+    overflow := 0.U
+    overflow32 := 0.U
+    count := 0.U
     busy := true.B
   }
 
@@ -61,21 +75,27 @@ class SimpleDivider(val bits: Int) extends Module {
         dividend := dividend((bits*2-1), 0) ## 0.U(1.W)
         quotient := quotient(bits-2, 0) ## 0.U(1.W)
     }
+
+    overflow := quotient(bits-1)
+    overflow32 := overflow32 | quotient(32-1)
     count := count + 1.U
   }
 
-  // Did we shift out a 1? This also handles divide by zero
-  val overflow = Reg(Bool())
-  overflow := quotient(bits-1)
+  val sResult = Mux(negativeResult, -(0.U(1.W) ## quotient), 0.U(1.W) ## quotient)
+
+  // Catch unsigned and signed overflow, from Paul
+  val resultOverflow = WireDefault(false.B)
   when (is32bit) {
-    overflow := quotient(63, 31).orR
+    resultOverflow := overflow32.asBool || (signed && (sResult(32) ^ sResult(32-1)))
+  } .otherwise {
+    resultOverflow := overflow.asBool || (signed && (sResult(bits) ^ sResult(bits-1)))
   }
 
-  val result = WireDefault(quotient)
-  when (overflow) {
+  val result = WireDefault(sResult(bits-1, 0))
+  when (resultOverflow) {
     result := 0.U
   } .elsewhen (is32bit && !modulus) {
-    result := 0.U(32.W) ## quotient(31, 0)
+    result := sResult(31, 0)
   }
 
   io.out.bits := RegNext(result)
