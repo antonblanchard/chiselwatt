@@ -52,6 +52,9 @@ class LoadStoreUnitTester extends FlatSpec with ChiselScalatestTester with Match
       m.clock.step()
 
       m.io.in.valid.poke(false.B)
+      m.io.out.valid.expect(false.B)
+      m.clock.step()
+
       m.io.out.valid.expect(true.B)
       m.clock.step()
 
