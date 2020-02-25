@@ -48,4 +48,16 @@ object chiselwatt extends CrossSbtModule with HasChisel3 with HasChiselTests wit
   override def millSourcePath = super.millSourcePath
   def crossScalaVersion = "2.12.10"
   def mainClass = Some("CoreObj")
+  def scalacOptions = super.scalacOptions() ++ Seq(
+    "-language:reflectiveCalls",
+    "-feature",
+    "-Xlint",
+    "-Ywarn-value-discard",
+    "-Ywarn-dead-code",
+    "-Ywarn-unused",
+    "-Ywarn-unused-import",
+    "-Ywarn-numeric-widen",
+    "-Xfuture",
+    "-Yno-adapted-args"
+  )
 }

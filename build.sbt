@@ -52,7 +52,19 @@ scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
 
 javacOptions ++= javacOptionsVersion(scalaVersion.value)
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-language:reflectiveCalls", "-feature")
-scalacOptions ++= Seq("-Ywarn-value-discard", "-Ywarn-dead-code", "-Ywarn-unused")
+scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-language:reflectiveCalls",
+  "-feature",
+  "-Xlint",
+  "-Ywarn-value-discard",
+  "-Ywarn-dead-code",
+  "-Ywarn-unused",
+  "-Ywarn-unused-import",
+  "-Ywarn-numeric-widen",
+  "-Xfuture",
+  "-Yno-adapted-args"
+)
 
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.2-SNAPSHOT"
