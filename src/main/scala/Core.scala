@@ -14,6 +14,19 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     val ledC = Output(UInt(1.W))
   })
 
+  private def cmp(res: UInt, lt: Bool, is32bit: Bool): UInt = {
+    val isZero = Mux(is32bit, res(31, 0) === 0.U, res === 0.U)
+
+    val crLt   = "b1000".U
+    val crGt   = "b0100".U
+    val crZero = "b0010".U
+
+    MuxCase(crGt, Seq(
+      isZero -> crZero,
+      lt -> crLt
+    ))
+  }
+
   val memWords = memSize/(bits/8)
 
   val nia = Module(new Nia(bits, resetAddr))
@@ -61,6 +74,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   val decodeNia = RegNext(nia.io.nia.bits)
   val decodeValid = RegNext(nia.io.nia.valid)
 
+
   // Decode
 
   control.io.insn := decodeInsn
@@ -102,12 +116,12 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   val executeValid = RegNext(decodeValid)
   val executeNia = RegNext(decodeNia)
 
+
   // Execute
 
-  val executeFastOp = MuxLookup(ctrl.unit, true.B, Array(
+  val executeFast = MuxLookup(ctrl.unit, true.B, Array(
     U_MUL -> false.B,
-    U_DIV -> false.B,
-    U_LDST -> false.B
+    U_DIV -> false.B
   ))
 
   adder.io.a := executeRa
@@ -141,6 +155,20 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   countZeroes.io.countRight := ctrl.countRight
   countZeroes.io.is32bit := ctrl.is32bit
 
+  loadStore.io.in.bits.a := executeRa
+  loadStore.io.in.bits.b := executeRb
+  loadStore.io.in.bits.data := executeRs
+  loadStore.io.in.bits.internalOp := ctrl.internalOp
+  loadStore.io.in.bits.length := ctrl.length
+  loadStore.io.in.bits.signed := ctrl.signed
+  loadStore.io.in.bits.byteReverse := ctrl.byteReverse
+  loadStore.io.in.bits.update := ctrl.update
+  loadStore.io.in.bits.reservation := ctrl.reservation
+  loadStore.io.in.valid := false.B
+  when (executeValid && (ctrl.unit === U_LDST)) {
+    loadStore.io.in.valid := true.B
+  }
+
   multiplier.io.in.bits.a := executeRa
   multiplier.io.in.bits.b := executeRb
   multiplier.io.in.bits.is32bit := ctrl.is32bit
@@ -162,33 +190,19 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     divider.io.in.valid := true.B
   }
 
-  loadStore.io.in.bits.a := executeRa
-  loadStore.io.in.bits.b := executeRb
-  loadStore.io.in.bits.data := executeRs
-  loadStore.io.in.bits.internalOp := ctrl.internalOp
-  loadStore.io.in.bits.length := ctrl.length
-  loadStore.io.in.bits.signed := ctrl.signed
-  loadStore.io.in.bits.byteReverse := ctrl.byteReverse
-  loadStore.io.in.bits.update := ctrl.update
-  loadStore.io.in.bits.reservation := ctrl.reservation
-  loadStore.io.in.valid := false.B
-  when (executeValid && (ctrl.unit === U_LDST)) {
-    loadStore.io.in.valid := true.B
-  }
-
   val xerRegisterNum = 1
   val linkRegisterNum = 8
   val CountRegisterNum = 9
 
-  val sprOut = RegInit(0.U(bits.W))
+  val memSprOut = RegInit(0.U(bits.W))
   when (executeValid && (ctrl.unit === U_SPR)) {
     when (ctrl.internalOp === SPR_MF) {
       when (insn_spr(executeInsn) === linkRegisterNum.asUInt) {
-        sprOut := linkRegister
+        memSprOut := linkRegister
       } .elsewhen (insn_spr(executeInsn) === CountRegisterNum.asUInt) {
-        sprOut := countRegister
+        memSprOut := countRegister
       } .elsewhen (insn_spr(executeInsn) === xerRegisterNum.asUInt) {
-        sprOut := carry << 29
+        memSprOut := carry << 29
       } .otherwise {
         illegal := true.B
       }
@@ -205,7 +219,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     }
   }
 
-  val crOut = RegInit(0.U(bits.W))
+  val memCrOut = RegInit(0.U(bits.W))
   when (executeValid && (ctrl.unit === U_CR)) {
     val fxm = WireDefault(UInt(8.W), 0.U)
 
@@ -219,7 +233,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     }
 
     when (ctrl.internalOp === CR_MF) {
-      crOut := fxm.asBools.zip(conditionRegister).map({ case (f, c) =>
+      memCrOut := fxm.asBools.zip(conditionRegister).map({ case (f, c) =>
         Mux(f, c, 0.U)
       }).reduce(_ ## _)
     } .elsewhen (ctrl.internalOp === CR_MT) {
@@ -262,22 +276,23 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
       }
     }
 
+    when (insn_lr(executeInsn).asBool) {
+      linkRegister := executeNia + 4.U
+    }
+
     when (branchTaken) {
       nia.io.redirect := true.B
-      when (insn_lr(executeInsn).asBool) {
-        linkRegister := executeNia + 4.U
-      }
     }
   }
 
-  val adderOut = RegNext(adder.io.out)
-  val adderCarryOut = RegNext(adder.io.carryOut)
-  val adderLtOut = RegNext(adder.io.ltOut.asBool)
-  val logicalOut = RegNext(logical.io.out)
-  val rotatorOut = RegNext(rotator.io.out)
-  val rotatorCarryOut = RegNext(rotator.io.carryOut)
-  val populationCountOut = RegNext(populationCount.io.out)
-  val countZeroesOut = RegNext(countZeroes.io.out)
+  val memAdderOut = RegNext(adder.io.out)
+  val memAdderCarryOut = RegNext(adder.io.carryOut)
+  val memAdderLtOut = RegNext(adder.io.ltOut.asBool)
+  val memLogicalOut = RegNext(logical.io.out)
+  val memRotatorOut = RegNext(rotator.io.out)
+  val memRotatorCarryOut = RegNext(rotator.io.carryOut)
+  val memPopulationCountOut = RegNext(populationCount.io.out)
+  val memCountZeroesOut = RegNext(countZeroes.io.out)
 
   when (executeValid && (ctrl.unit === U_ILL)) {
     illegal := true.B
@@ -292,89 +307,120 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     nia.io.redirect_nia := executeNia
   }
 
-  /* Handle load and store with update instructions */
-  val writebackLoadStoreAddr = RegNext(insn_ra(executeInsn))
-  val writebackLoadStore = RegInit(false.B)
-  writebackLoadStore := false.B
+  val memValid = RegNext(executeValid)
+  val memFast = RegNext(executeFast && executeValid)
+
+  val memRegValid = RegNext(ctrl.rOut =/= ROUT_NONE)
+  val memUnit = RegNext(ctrl.unit)
+  val memRegAddr = RegNext(Mux(ctrl.rOut === ROUT_RA, insn_ra(executeInsn), insn_rt(executeInsn)))
+
+  val memRcValid = RegNext((ctrl.compare === CMP_RC_1) || ((ctrl.compare === CMP_RC_RC) && insn_rc(executeInsn).asBool))
+
+  val memCrValid = RegNext(ctrl.compare === CMP_CMP)
+  val memCrAddr = RegNext(insn_bf(executeInsn))
+  // Compare instructions need to know if a comparison is 32 bit
+  val memIs32bit = RegNext(ctrl.is32bit.asBool)
+
+  val memCarryValid = RegNext(ctrl.carryOut.asBool)
+
+  /*
+   * Handle load and store with update instructions. We rely on them being single issue
+   * and we send the update directly to writeback, bypassing the mem cycle.
+   */
+  val wbLoadStoreRegAddr = RegInit(insn_ra(executeInsn))
+  val wbLoadStoreRegValid = Reg(Bool())
+  wbLoadStoreRegValid := false.B
   when (executeValid && (ctrl.unit === U_LDST) && ctrl.update.asBool) {
-    writebackLoadStore := true.B
+    wbLoadStoreRegValid := true.B
+    wbLoadStoreRegAddr := insn_ra(executeInsn)
   }
 
-  val writebackFastValid = RegNext(executeValid && executeFastOp)
-  val writebackFastCarryValid = RegNext(ctrl.carryOut.asBool)
+
+  // Memory
+
+  val memRegDataRc = MuxLookup(memUnit, memAdderOut, Array(
+    U_LOG -> memLogicalOut,
+    U_ROT -> memRotatorOut,
+    U_ZER -> memCountZeroesOut,
+  ))
+
+  val memRegData = MuxLookup(memUnit, memRegDataRc, Array(
+    U_POP -> memPopulationCountOut,
+    U_SPR -> memSprOut,
+    U_CR  -> memCrOut,
+  ))
+
+  val memCarryData = MuxLookup(memUnit, memAdderCarryOut, Array(
+    U_ROT -> memRotatorCarryOut
+  ))
+
+  val memRcData = cmp(memRegDataRc, memRegDataRc(bits-1).asBool, false.B)
+
+  when (memValid && memCrValid) {
+    conditionRegister(memCrAddr) := cmp(memAdderOut, memAdderLtOut, memIs32bit)
+  }
+
+  val wbFast = RegNext(memFast)
+
+  val wbCarryValid = RegNext(memCarryValid)
+  val wbCarryData = RegNext(memCarryData)
+
+  val wbRcData = RegNext(memRcData)
 
   // We need to gate these with executeValid because slow units need it
-  val writebackUnit = RegInit(U_NONE)
-  val writebackRValid = RegInit(false.B)
-  val writebackAddr = RegInit(0.U)
-  val writebackRc = RegInit(false.B)
-  when (executeValid) {
-    writebackUnit := ctrl.unit
-    writebackRValid := ctrl.rOut =/= ROUT_NONE
-    writebackAddr := Mux(ctrl.rOut === ROUT_RA, insn_ra(executeInsn), insn_rt(executeInsn))
-    writebackRc := (ctrl.compare === CMP_RC_1) || ((ctrl.compare === CMP_RC_RC) && insn_rc(executeInsn).asBool)
+  val wbUnit = RegInit(U_NONE)
+  val wbRegValid = RegInit(false.B)
+  val wbRegAddr = RegInit(0.U)
+  val wbRcValid = RegInit(false.B)
+  when (memValid) {
+    wbRegValid := memRegValid
+    wbUnit := memUnit
+    wbRegAddr := memRegAddr
+    wbRcValid := memRcValid
   }
 
-  val writebackCmp = RegNext(ctrl.compare === CMP_CMP)
-  val writebackCrField = RegNext(insn_bf(executeInsn))
-  // Compare instructions need to know if a comparison is 32 bit
-  val writebackIs32bit = RegNext(ctrl.is32bit.asBool)
+  val wbRegData = RegNext(memRegData)
+
 
   // Writeback
 
-  val wrRcData = MuxLookup(writebackUnit, adderOut, Array(
-    U_LOG -> logicalOut,
-    U_ROT -> rotatorOut,
-    U_ZER -> countZeroesOut,
+  val wbRegData1 = MuxLookup(wbUnit, multiplier.io.out.bits, Array(
+    U_DIV -> divider.io.out.bits
+  ))
+
+  val wbRegData2 = MuxLookup(wbUnit, wbRegData, Array(
     U_MUL -> multiplier.io.out.bits,
     U_DIV -> divider.io.out.bits,
+    U_LDST -> loadStore.io.out.bits
   ))
 
-  val wrData = MuxLookup(writebackUnit, wrRcData, Array(
-    U_POP -> populationCountOut,
-    U_SPR -> sprOut,
-    U_CR  -> crOut,
-    U_LDST -> loadStore.io.out.bits,
+  val wbRcData1 = cmp(wbRegData1, wbRegData1(bits-1).asBool, false.B)
+
+  val wbRcData2 = MuxLookup(wbUnit, wbRcData, Array(
+    U_MUL -> wbRcData1,
+    U_DIV -> wbRcData1
   ))
 
-  when (writebackLoadStore) {
-    regFile.io.wr(0).bits.addr := writebackLoadStoreAddr
-    regFile.io.wr(0).bits.data := adderOut
+  when (wbFast && wbUnit === U_LDST) {
+    assert(loadStore.io.out.valid)
+  }
+
+  when (wbLoadStoreRegValid) {
+    regFile.io.wr(0).bits.addr := wbLoadStoreRegAddr
+    regFile.io.wr(0).bits.data := memAdderOut
     regFile.io.wr(0).fire() := true.B
   }. otherwise {
-    regFile.io.wr(0).bits.addr := writebackAddr
-    regFile.io.wr(0).bits.data := wrData
-    when (multiplier.io.out.valid || divider.io.out.valid || (loadStore.io.out.valid && writebackRValid)) {
-      regFile.io.wr(0).fire() := true.B
-    } .otherwise {
-      regFile.io.wr(0).fire() := writebackFastValid && writebackRValid
-    }
+    regFile.io.wr(0).bits.addr := wbRegAddr
+    regFile.io.wr(0).bits.data := wbRegData2
+    regFile.io.wr(0).fire() := (wbFast && wbRegValid) || multiplier.io.out.valid || divider.io.out.valid
   }
 
-  when (writebackFastValid && writebackFastCarryValid) {
-    carry := MuxLookup(writebackUnit, adderCarryOut, Array(
-      U_ROT -> rotatorCarryOut
-    ))
+  when (wbFast && wbCarryValid) {
+    carry := wbCarryData
   }
 
-  private def cmp(res: UInt, lt: Bool, is32bit: Bool): UInt = {
-    val isZero = Mux(is32bit, res(31, 0) === 0.U, res === 0.U)
-
-    val crLt   = "b1000".U
-    val crGt   = "b0100".U
-    val crZero = "b0010".U
-
-    MuxCase(crGt, Seq(
-      isZero -> crZero,
-      lt -> crLt
-    ))
-  }
-
-  when (writebackRc && (writebackFastValid || multiplier.io.out.valid || divider.io.out.valid)) {
-    conditionRegister(0) := cmp(wrRcData, wrRcData(bits-1).asBool, false.B)
-  } .elsewhen (writebackFastValid && writebackCmp) {
-    conditionRegister(writebackCrField) :=
-      cmp(adderOut, adderLtOut, writebackIs32bit)
+  when (wbRcValid && (wbFast || multiplier.io.out.valid || divider.io.out.valid)) {
+    conditionRegister(0) := wbRcData2
   }
 
   val sReset :: sFirst :: sRunning :: Nil = Enum(3)
@@ -389,7 +435,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
     }
   }
 
-  val completed = RegNext((initState === sRunning) && (writebackFastValid || multiplier.io.out.valid || loadStore.io.out.valid || divider.io.out.valid))
+  val completed = RegNext((initState === sRunning) && (wbFast || multiplier.io.out.valid || loadStore.io.out.valid || divider.io.out.valid))
 
   // One instruction in the entire pipeline at a time
   nia.io.nia.ready := completed || (initState === sFirst)

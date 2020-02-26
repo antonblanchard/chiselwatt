@@ -54,7 +54,7 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
   val signed = Reg(UInt(1.W))
   val byteReverse = Reg(UInt(1.W))
   val reservation = Reg(UInt(1.W))
-  val sIdle :: sStoreAccess :: sLoadFormat :: sLoadReturn :: Nil = Enum(4)
+  val sIdle :: sStoreAccess :: sStoreIdle :: sLoadFormat :: sLoadReturn :: Nil = Enum(5)
   val state = RegInit(sIdle)
 
   val fifoLength = 128
@@ -126,6 +126,11 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
         io.mem.writeData := data
       }
 
+      /* Done, wait another cycle to line up with writeback */
+      state := sStoreIdle
+    }
+
+    is (sStoreIdle) {
       /* Done */
       io.out.valid := true.B
       state := sIdle
