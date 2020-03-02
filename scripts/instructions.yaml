@@ -1768,6 +1768,12 @@ mtocrf:
   compare: CMP_RC_0
   fxm: FXM_ONEHOT
 
+mcrf:
+  unit: U_CR
+  internalOp: CR_MCRF
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+
 b:
   unit: U_BR
   internalOp: BR_UNCOND
