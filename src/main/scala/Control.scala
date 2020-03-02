@@ -37,8 +37,9 @@ object Control {
   val SPR_MF = 0.U(2.W)
   val SPR_MT = 1.U(2.W)
 
-  val CR_MF = 0.U(2.W)
-  val CR_MT = 1.U(2.W)
+  val CR_MF   = 0.U(2.W)
+  val CR_MT   = 1.U(2.W)
+  val CR_MCRF = 2.U(2.W)
 
   val BR_UNCOND = 0.U(2.W)
   val BR_COND   = 1.U(2.W)

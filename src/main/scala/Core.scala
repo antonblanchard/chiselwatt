@@ -240,6 +240,8 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
       conditionRegister := fxm.asBools.zip(conditionRegister).zip(executeRs(31, 0).nibbles().reverse).map({ case ((fxm, cr), reg) =>
         Mux(fxm, reg, cr)
       })
+    } .elsewhen (ctrl.internalOp === CR_MCRF) {
+      conditionRegister(insn_bf(executeInsn)) := conditionRegister(insn_bfa(executeInsn))
     }
   }
 
