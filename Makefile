@@ -36,6 +36,14 @@ PACKAGE=CABGA381
 NEXTPNR_FLAGS=--um5g-85k --freq 12
 OPENOCD_JTAG_CONFIG=openocd/ecp5-evn.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
+else ifeq ($(ECP5_BOARD),ulx3s)
+# Radiona ULX3S with ECP5-85F
+LPF=constraints/ecp5-ulx3s.lpf
+PLL=pll/pll_ehxplll_25MHz.v
+PACKAGE=CABGA381
+NEXTPNR_FLAGS=--85k --freq 25
+OPENOCD_JTAG_CONFIG=openocd/ft231x.cfg
+OPENOCD_DEVICE_CONFIG=openocd/LFE5U-85F.cfg
 else ifeq ($(ECP5_BOARD),orangecrab)
 # OrangeCrab with ECP85
 LPF=constraints/orange-crab.lpf
@@ -85,7 +93,7 @@ dockerlator: chiselwatt
 synth: test-vars chiselwatt.bit
 
 test-vars:
-	@test -n "$(LPF)" || (echo "If synthesizing, use \"synth\" target with ECP5_BOARD variable to either \"evn\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
+	@test -n "$(LPF)" || (echo "If synthesizing, use \"synth\" target with ECP5_BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
 
 chiselwatt.json: insns.hex $(verilog_files) $(PLL) toplevel.v
 	$(YOSYS) -p "read_verilog -sv $(verilog_files) $(PLL) toplevel.v; synth_ecp5 -json $@ -top toplevel"

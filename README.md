@@ -94,6 +94,7 @@ ln -s hello_world/hello_world.hex insns.hex
 The `Makefile` currently supports the following FPGA boards by defining the `ECP5_BOARD` parameter on make:
 
 * Lattice [ECP5 Evaluation Board](http://www.latticesemi.com/ecp5-evaluation) - `evn`
+* Radiona [ULX3S](https://radiona.org/ulx3s/) - `ulx3s`
 * Greg Davill [Orangecrab](https://github.com/gregdavill/OrangeCrab) - `orangecrab`
 * Q3k [Colorlight](https://github.com/q3k/chubby75/tree/master/5a-75b) - `colorlight`
 
@@ -134,16 +135,16 @@ Then link in the micropython image:
 ln -s micropython/firmware.hex insns.hex
 ```
 
-For example, to build for the Orangecrab, run:
+For example, to build for the ULX3S, run:
 
 ```sh
-make ECP5_BOARD=orangecrab synth`
+make ECP5_BOARD=ulx3s synth`
 ```
 
 and to program the FPGA:
 
 ```sh
-make ECP5_BOARD=orangecrab prog
+make ECP5_BOARD=ulx3s prog
 ```
 
 ## Simple Python script for reading USB serial port
