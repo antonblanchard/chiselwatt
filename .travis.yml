@@ -6,4 +6,5 @@ services: docker
 before_install: docker pull verilator/verilator:latest
 
 script:
-        docker run --rm -t -v `pwd`:/build -w /build --entrypoint /bin/bash verilator/verilator:latest -c "apt update && apt install -y default-jre-headless python3-pexpect curl && make && make check && ./scripts/test_micropython_long.py"
+        # Unset the VERILATOR variable so the container won't fail when running inside another container in Travis
+        docker run --rm -t -v `pwd`:/build -w /build --entrypoint /bin/bash verilator/verilator:latest -c "apt update && apt install -y default-jre-headless python3-pexpect curl && make VERILATOR= && make VERILATOR= check && ./scripts/test_micropython_long.py"
