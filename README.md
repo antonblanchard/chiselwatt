@@ -108,9 +108,17 @@ and to program the FPGA:
 
 ```sh
 make ECP5_BOARD=evn prog
+
+# or if your USB device has a different path, pass it on USBDEVICE, like:
+
+make ECP5_BOARD=evn USBDEVICE=/dev/tty.usbserial-120001 prog
 ```
 
-If you connect to the serial port of the FPGA at 115200 8n1, you should see "Hello World"
+Programming using OpenOCD on Docker does not work on Docker Desktop for Mac since the container is run in a Linux VM and can not see the physical devices connected to the MacOS.
+
+For the ULX3S board, the current OpenOCD does not support ft232 protocol so to program it, download [ujprog](https://github.com/emard/ulx3s-bin/tree/master/usb-jtag) for your platform and program using `./ujprog chiselwatt.bit` or to persist in the flash, `./ujprog -j FLASH chiselwatt.bit`.
+
+After programming, if you connect to the serial port of the FPGA at 115200 8n1, you should see "Hello World"
 and after that all input will be echoed to the output. On Linux, picocom can be used.
 Another option below is a simple python script.
 

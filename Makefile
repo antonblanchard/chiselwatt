@@ -3,14 +3,16 @@ DOCKER=docker
 #DOCKER=podman
 
 PWD = $(shell pwd)
+USBDEVICE ?= /dev/bus/usb
 DOCKERARGS = run --rm -v $(PWD):/src -w /src
 VERILATORARGS = run --name verilator --hostname verilator --rm -it --entrypoint= -v $(PWD):/work -w /work
 
-YOSYS     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
-NEXTPNR   = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-ecp5 nextpnr-ecp5
-ECPPACK   = $(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppack
-OPENOCD   = $(DOCKER) $(DOCKERARGS) --device /dev/bus/usb ghdl/synth:prog openocd
-VERILATOR = $(DOCKER) $(VERILATORARGS) verilator/verilator
+YOSYS          = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
+NEXTPNR        = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-ecp5 nextpnr-ecp5
+ECPPACK        = $(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppack
+OPENOCD_DEF    = $(DOCKER) $(DOCKERARGS) --privileged --device $(USBDEVICE):/dev/bus/usb ghdl/synth:prog openocd
+OPENOCD_ULX3S  = $(DOCKER) $(DOCKERARGS) --privileged --device $(USBDEVICE):/dev/bus/usb alpin3/ulx3s openocd
+VERILATOR      = $(DOCKER) $(VERILATORARGS) verilator/verilator
 
 # Uncomment to use local tools for synthesis
 #YOSYS     = yosys
@@ -34,6 +36,7 @@ LPF=constraints/ecp5-evn.lpf
 PLL=pll/pll_ehxplll.v
 PACKAGE=CABGA381
 NEXTPNR_FLAGS=--um5g-85k --freq 12
+OPENOCD=$(OPENOCD_DEF)
 OPENOCD_JTAG_CONFIG=openocd/ecp5-evn.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
 else ifeq ($(ECP5_BOARD),ulx3s)
@@ -42,6 +45,7 @@ LPF=constraints/ecp5-ulx3s.lpf
 PLL=pll/pll_ehxplll_25MHz.v
 PACKAGE=CABGA381
 NEXTPNR_FLAGS=--85k --freq 25
+OPENOCD=$(OPENOCD_ULX3S)
 OPENOCD_JTAG_CONFIG=openocd/ft231x.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5U-85F.cfg
 else ifeq ($(ECP5_BOARD),orangecrab)
@@ -50,6 +54,7 @@ LPF=constraints/orange-crab.lpf
 PLL=pll/pll_bypass.v
 PACKAGE=CSFBGA285
 NEXTPNR_FLAGS=--um5g-85k --freq 50
+OPENOCD=$(OPENOCD_DEF)
 OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5UM5G-85F.cfg
 else ifeq ($(ECP5_BOARD),colorlight)
@@ -58,6 +63,7 @@ LPF=constraints/colorlight_5A-75B.lpf
 PLL=pll/pll_ehxplll_25MHz.v
 PACKAGE=CABGA256
 NEXTPNR_FLAGS=--25k --freq 25
+OPENOCD=$(OPENOCD_DEF)
 OPENOCD_JTAG_CONFIG=openocd/olimex-arm-usb-tiny-h.cfg
 OPENOCD_DEVICE_CONFIG=openocd/LFE5U-25F.cfg
 else
@@ -90,10 +96,10 @@ dockerlator: chiselwatt
 # Mask exit code from verilator on Make
 	@$(VERILATOR) bash || true
 
-synth: test-vars chiselwatt.bit
+synth: check-board-vars chiselwatt.bit
 
-test-vars:
-	@test -n "$(LPF)" || (echo "If synthesizing, use \"synth\" target with ECP5_BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
+check-board-vars:
+	@test -n "$(LPF)" || (echo "If synthesizing or programming, use \"synth\" or \"prog\" targets with ECP5_BOARD variable to either \"evn\", \"ulx3s\", \"orangecrab\", \"colorlight\"\n" ; exit 1)
 
 chiselwatt.json: insns.hex $(verilog_files) $(PLL) toplevel.v
 	$(YOSYS) -p "read_verilog -sv $(verilog_files) $(PLL) toplevel.v; synth_ecp5 -json $@ -top toplevel"
@@ -106,8 +112,8 @@ chiselwatt.bit: chiselwatt_out.config
 
 chiselwatt.svf: chiselwatt.bit
 
-prog: chiselwatt.svf
-	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf $<; exit"
+prog: check-board-vars chiselwatt.svf
+	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf chiselwatt.svf; exit"
 
 clean:
 	@rm -f Core.fir firrtl_black_box_resource_files.f Core.v Core.anno.json MemoryBlackBox.v

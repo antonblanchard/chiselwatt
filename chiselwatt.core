@@ -31,6 +31,11 @@ filesets:
       - constraints/ecp5-evn.lpf : {file_type : LPF}
       - pll/pll_ehxplll.v : {file_type : verilogSource}
 
+  ecp5-ulx3s:
+    files:
+      - constraints/ecp5-ulx3s.lpf : {file_type : LPF}
+      - pll/pll_ehxplll_25MHz.v : {file_type : verilogSource}
+
 targets:
   cmod_a7-35:
     default_tool: vivado
@@ -65,6 +70,13 @@ targets:
   ecp5-evn:
     default_tool: diamond
     filesets: [core, ecp5-evn]
+    tools:
+      diamond: {part: LFE5U-85F-8BG381I}
+    toplevel : toplevel
+
+  ecp5-ulx3s:
+    default_tool: diamond
+    filesets: [core, ecp5-ulx3s]
     tools:
       diamond: {part: LFE5U-85F-8BG381I}
     toplevel : toplevel
