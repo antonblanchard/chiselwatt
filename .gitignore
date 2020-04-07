@@ -6,3 +6,16 @@ test_run_dir/
 *.anno.json
 *.fir
 *.vcd
+insns.hex
+firrtl_black_box_resource_files.f
+chiselwatt_out.config
+chiselwatt.svf
+chiselwatt.json
+chiselwatt.bit
+chiselwatt
+MemoryBlackBox.v
+Core.v
+Core.fir
+Core.anno.json
+LoadStoreInsns.hex
+MemoryBlackBoxInsns.hex
