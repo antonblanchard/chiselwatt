@@ -6,6 +6,7 @@ test_run_dir/
 *.anno.json
 *.fir
 *.vcd
+.metals
 insns.hex
 firrtl_black_box_resource_files.f
 chiselwatt_out.config
@@ -19,3 +20,8 @@ Core.fir
 Core.anno.json
 LoadStoreInsns.hex
 MemoryBlackBoxInsns.hex
+samples/micropython
+samples/hello_world/hello_world.bin
+samples/hello_world/hello_world.elf
+samples/hello_world/hello_world.o
+samples/hello_world/head.o

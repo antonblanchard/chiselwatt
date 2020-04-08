@@ -12,7 +12,7 @@ tempdir = tempfile.TemporaryDirectory()
 cwd = os.getcwd()
 os.chdir(tempdir.name)
 
-copyfile(os.path.join(cwd, 'micropython/firmware.hex'),
+copyfile(os.path.join(cwd, 'samples/binaries/micropython/firmware.hex'),
         os.path.join(tempdir.name, 'insns.hex'))
 
 cmd = [ os.path.join(cwd, 'chiselwatt') ]
