@@ -972,6 +972,114 @@ ldbrx:
   update: N
   reservation: N
 
+lbzcix:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+ldcix:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lhzcix:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+lwzcix:
+  unit: U_LDST
+  internalOp: LDST_LOAD
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rOut: ROUT_RT
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stbcix:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_1B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stdcix:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_8B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+sthcix:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_2B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
+stwcix:
+  unit: U_LDST
+  internalOp: LDST_STORE
+  rA: RA_RA_OR_ZERO
+  rB: RB_RB
+  rS: RS_RS
+  rOut: ROUT_NONE
+  compare: CMP_RC_0
+  length: LEN_4B
+  signed: N
+  byteReverse: N
+  update: N
+  reservation: N
+
 ldx:
   unit: U_LDST
   internalOp: LDST_LOAD
