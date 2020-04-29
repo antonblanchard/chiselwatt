@@ -101,7 +101,7 @@ The `Makefile` currently supports the following FPGA boards by defining the `ECP
 For example, to build for the Evaluation Board, run:
 
 ```sh
-make ECP5_BOARD=evn synth`
+make ECP5_BOARD=evn synth
 ```
 
 and to program the FPGA:
