@@ -115,13 +115,33 @@ chiselwatt.svf: chiselwatt.bit
 prog: check-board-vars chiselwatt.svf
 	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) -c "transport select jtag; init; svf chiselwatt.svf; exit"
 
+apps_dir = ./samples
+
+hello_world:
+	docker run -it --rm -w /build -v $(PWD):/build carlosedp/crossbuild-ppc64le make -C $(apps_dir)/hello_world
+	@scripts/bin2hex.py $(apps_dir)/hello_world/hello_world.bin > ./insns.hex
+
+micropython:
+	@if [ ! -d "$(apps_dir)/micropyton/ports/powerpc" ] ; then \
+		rm -rf $(apps_dir)/micropyton; \
+		echo "Cloning micropython repo into $(apps_dir)/micropyton"; \
+		git clone https://github.com/micropython/micropython.git $(apps_dir)/micropyton; \
+	else \
+		echo "Micropython repo exists, updating..."; \
+		cd "$(apps_dir)/micropyton"; \
+		git pull; \
+	fi
+	@docker run -it --rm -v $(PWD):/build carlosedp/crossbuild-ppc64le make -C $(apps_dir)/micropyton/ports/powerpc
+	@scripts/bin2hex.py $(apps_dir)/micropyton/ports/powerpc/build/firmware.bin > ./insns.hex
+
 clean:
 	@rm -f Core.fir firrtl_black_box_resource_files.f Core.v Core.anno.json MemoryBlackBox.v
 	@rm -rf obj_dir test_run_dir target project
 	@rm -f chiselwatt
 	@rm -f *.bit *.json *.svf *.config
 	@rm -f LoadStoreInsns.hex MemoryBlackBoxInsns.hex
+	@make -C $(apps_dir)/hello_world clean
 
-.PHONY: clean prog
+.PHONY: clean prog hello_world micropython
 .PRECIOUS: chiselwatt.json chiselwatt_out.config chiselwatt.bit
 
