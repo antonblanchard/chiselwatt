@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{Valid, Decoupled, log2Ceil}
+import chisel3.stage.ChiselStage
 
 class DividerInput(val bits: Int) extends Bundle {
   val dividend = UInt(bits.W)
@@ -106,5 +107,5 @@ class SimpleDivider(val bits: Int) extends Module {
 }
 
 object SimpleDividerObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new SimpleDivider(64))
+  (new ChiselStage).emitVerilog(new SimpleDivider(64))
 }

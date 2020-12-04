@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{MuxCase, MuxLookup}
+import chisel3.stage.ChiselStage
 
 import Control._
 import Helpers._
@@ -32,5 +33,5 @@ class Logical(bits: Int) extends Module {
 }
 
 object LogicalObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new Logical(64))
+  (new ChiselStage).emitVerilog(new Logical(64))
 }

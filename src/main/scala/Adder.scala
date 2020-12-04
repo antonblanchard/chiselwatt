@@ -1,4 +1,5 @@
 import chisel3._
+import chisel3.stage.ChiselStage
 
 class Adder(n: Int) extends Module {
   val io = IO(new Bundle {
@@ -33,5 +34,5 @@ class Adder(n: Int) extends Module {
 }
 
 object AdderObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new Adder(64))
+  (new ChiselStage).emitVerilog(new Adder(64))
 }

@@ -19,7 +19,7 @@ trait HasXsource211 extends ScalaModule {
 
 trait HasChisel3 extends ScalaModule {
   override def ivyDeps = Agg(
-    ivy"edu.berkeley.cs::chisel3:3.2.5"
+    ivy"edu.berkeley.cs::chisel3:3.4.0"
  )
 }
 
@@ -28,7 +28,7 @@ trait HasChiselTests extends CrossSbtModule  {
     override def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.4",
       ivy"edu.berkeley.cs::chisel-iotesters:1.2+",
-      ivy"edu.berkeley.cs::chiseltest:0.2-SNAPSHOT"
+      ivy"edu.berkeley.cs::chiseltest:0.3.0"
     )
     def repositories = super.repositories ++ Seq(
       MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")

@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.stage.ChiselStage
 
 import Control._
 import Helpers._
@@ -444,5 +445,5 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
 }
 
 object CoreObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new Core(64, 384*1024, "insns.hex", 0x0))
+  (new ChiselStage).emitVerilog(new Core(64, 384*1024, "insns.hex", 0x0))
 }

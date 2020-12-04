@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.stage.ChiselStage
 
 /*
  * A simple TTL serial module. Idle is high. Start bits are low, stop bits
@@ -198,5 +199,5 @@ class Uart(val fifoLength: Int, val rxOverclock: Int) extends Module {
 }
 
 object UartObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new Uart(64, 16))
+  (new ChiselStage).emitVerilog(new Uart(64, 16))
 }

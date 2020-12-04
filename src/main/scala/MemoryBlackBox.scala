@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{log2Ceil,HasBlackBoxInline}
+import chisel3.stage.ChiselStage
 
 class MemoryBlackBox(val bits: Int, val words: Int, val filename: String) extends BlackBox with HasBlackBoxInline {
   val io = IO(new Bundle() {
@@ -88,5 +89,5 @@ class MemoryBlackBoxWrapper(val bits: Int, val words: Int, val filename: String)
 }
 
 object MemoryBlackBoxObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new MemoryBlackBoxWrapper(64, 1024, "test.hex"))
+  (new ChiselStage).emitVerilog(new MemoryBlackBoxWrapper(64, 1024, "test.hex"))
 }

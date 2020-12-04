@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{log2Ceil, MuxCase, Reverse}
+import chisel3.stage.ChiselStage
 
 /** Module for counting leading zeroes in a [[UInt]]
   * @param n the width of the [[UInt]]
@@ -59,7 +60,7 @@ class CountZeroes(bits: Int) extends Module {
 }
 
 object CountZeroesObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new CountZeroes(64))
+  (new ChiselStage).emitVerilog(new CountZeroes(64))
 }
 
 /** Utilities for counting zeroes */

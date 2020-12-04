@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{PopCount, MuxLookup}
+import chisel3.stage.ChiselStage
 
 import Control._
 import Helpers._
@@ -49,5 +50,5 @@ class PopulationCount(bits: Int) extends Module {
 }
 
 object PopulationCountObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new PopulationCount(64))
+  (new ChiselStage).emitVerilog(new PopulationCount(64))
 }

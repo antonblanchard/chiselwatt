@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.Decoupled
+import chisel3.stage.ChiselStage
 
 class Nia(val bits: Int, val resetAddr: Int) extends Module {
   val io = IO(new Bundle {
@@ -24,5 +25,5 @@ class Nia(val bits: Int, val resetAddr: Int) extends Module {
 }
 
 object NiaObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new Nia(32, 0x100))
+  (new ChiselStage).emitVerilog(new Nia(32, 0x100))
 }

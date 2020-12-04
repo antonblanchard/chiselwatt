@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util.{log2Ceil, Valid}
+import chisel3.stage.ChiselStage
 
 object RegisterFile {
   sealed trait PortDirection
@@ -36,5 +37,5 @@ class RegisterFile(numRegs: Int, bits: Int, numReadPorts: Int, numWritePorts: In
 }
 
 object RegisterFileObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new RegisterFile(32, 64, 3, 1, true))
+  (new ChiselStage).emitVerilog(new RegisterFile(32, 64, 3, 1, true))
 }
