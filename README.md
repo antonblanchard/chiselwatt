@@ -54,7 +54,7 @@ The `hello_world` example should run everywhere, so start with it.
 Edit `src/main/scala/Core.scala` and set memory to 16 kB (`16*1024`):
 
 ```scala
-chisel3.Driver.execute(Array[String](), () => new Core(64, 16*1024, "insns.hex", 0x0))
+  (new ChiselStage).emitVerilog(new Core(64, 16*1024, "insns.hex", 0x0))
 ```
 
 Then link in the hello_world image:

@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.util._
+import chisel3.stage.ChiselStage
 
 import Control._
 import Helpers._
@@ -205,5 +206,5 @@ class LoadStoreWrapper(val bits: Int, val size: Int, filename: String) extends M
 }
 
 object LoadStoreObj extends App {
-  chisel3.Driver.execute(Array[String](), () => new LoadStoreWrapper(64, 128*1024, "test.hex"))
+  (new ChiselStage).emitVerilog(new LoadStoreWrapper(64, 128*1024, "test.hex"))
 }
