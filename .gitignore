@@ -1,4 +1,5 @@
 project/
+/.bsp/
 target/
 obj_dir/
 out/
