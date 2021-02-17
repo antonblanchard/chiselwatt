@@ -1,4 +1,4 @@
-module pll(
+module Chiselwatt_pll(
   input  clki,
   output clko,
   output lock

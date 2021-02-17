@@ -1,6 +1,6 @@
 CAPI=2:
 
-name : ::chiselwatt:0
+name: ::chiselwatt:0
 
 filesets:
   core:
@@ -8,81 +8,114 @@ filesets:
       - Core.v
       - MemoryBlackBox.v
       - toplevel.v
-      - insns.hex : {copyto : insns.hex, file_type : user}
-    file_type : verilogSource
+      - insns.hex: { copyto: insns.hex, file_type: user }
+    file_type: verilogSource
+
+  helloworld:
+    files:
+      - samples/binaries/hello_world/hello_world.hex:
+          { copyto: insns.hex, file_type: user }
+
+  micropython:
+    files:
+      - samples/binaries/micropython/firmware.hex:
+          { copyto: insns.hex, file_type: user }
 
   cmod_a7-35:
     files:
-      - constraints/cmod_a7-35.xdc : {file_type : xdc}
-      - pll/pll_mmcme2.v : {file_type : verilogSource}
+      - constraints/cmod_a7-35.xdc: { file_type: xdc }
+      - pll/pll_mmcme2.v: { file_type: verilogSource }
 
   arty_a7:
     files:
-      - constraints/arty_a7.xdc : {file_type : xdc}
-      - pll/pll_bypass.v : {file_type : verilogSource}
+      - constraints/arty_a7.xdc: { file_type: xdc }
+      - pll/pll_bypass.v: { file_type: verilogSource }
 
   nexys_video:
     files:
-      - constraints/nexys-video.xdc : {file_type : xdc}
-      - pll/pll_bypass.v : {file_type : verilogSource}
+      - constraints/nexys-video.xdc: { file_type: xdc }
+      - pll/pll_bypass.v: { file_type: verilogSource }
 
   ecp5-evn:
     files:
-      - constraints/ecp5-evn.lpf : {file_type : LPF}
-      - pll/pll_ehxplll.v : {file_type : verilogSource}
+      - constraints/ecp5-evn.lpf: { file_type: LPF }
+      - pll/pll_ehxplll.v: { file_type: verilogSource }
 
   ecp5-ulx3s:
     files:
-      - constraints/ecp5-ulx3s.lpf : {file_type : LPF}
-      - pll/pll_ehxplll_25MHz.v : {file_type : verilogSource}
+      - constraints/ecp5-ulx3s.lpf: { file_type: LPF }
+      - pll/pll_ehxplll_25MHz.v: { file_type: verilogSource }
+
+  polarfireeval:
+    files:
+      - constraints/polarfire_eval.pdc: { file_type: PDC }
+      - pll/pll_polarfire50MHz.v: { file_type: verilogSource }
 
 targets:
   cmod_a7-35:
     default_tool: vivado
     filesets: [core, cmod_a7-35]
-    parameters :
+    parameters:
       - RESET_LOW=false
     tools:
-      vivado: {part : xc7a35tcpg236-1}
-    toplevel : toplevel
+      vivado: { part: xc7a35tcpg236-1 }
+    toplevel: toplevel
 
   arty_a7-35:
     default_tool: vivado
     filesets: [core, arty_a7]
     tools:
-      vivado: {part : xc7a35ticsg324-1L}
-    toplevel : toplevel
+      vivado: { part: xc7a35ticsg324-1L }
+    toplevel: toplevel
 
   arty_a7-100:
     default_tool: vivado
     filesets: [core, arty_a7]
     tools:
-      vivado: {part : xc7a100ticsg324-1L}
-    toplevel : toplevel
+      vivado: { part: xc7a100ticsg324-1L }
+    toplevel: toplevel
 
   nexys_video:
     default_tool: vivado
     filesets: [core, nexys_video]
     tools:
-      vivado: {part : xc7a200tsbg484-1}
-    toplevel : toplevel
+      vivado: { part: xc7a200tsbg484-1 }
+    toplevel: toplevel
 
   ecp5-evn:
     default_tool: diamond
     filesets: [core, ecp5-evn]
     tools:
-      diamond: {part: LFE5U-85F-8BG381I}
-    toplevel : toplevel
+      diamond: { part: LFE5U-85F-8BG381I }
+    toplevel: toplevel
 
   ecp5-ulx3s:
     default_tool: diamond
     filesets: [core, ecp5-ulx3s]
     tools:
-      diamond: {part: LFE5U-85F-8BG381I}
-    toplevel : toplevel
+      diamond: { part: LFE5U-85F-8BG381I }
+    toplevel: toplevel
+
+  polarfireeval: &polarfireeval
+    default_tool: libero
+    description: Microsemi Polarfire Evaluation Kit
+    filesets: [core, polarfireeval, micropython]
+    tools:
+      libero: &liberoMPF300
+        family: PolarFire
+        die: MPF300TS
+        package: FCG1152
+    toplevel: toplevel
+
+  polarfireeval_es:
+    <<: *polarfireeval
+    tools:
+      libero:
+        <<: *liberoMPF300
+        die: MPF300TS_ES
 
 parameters:
   RESET_LOW:
-    datatype    : bool
-    description : External reset button polarity
-    paramtype   : generic
+    datatype: bool
+    description: External reset button polarity
+    paramtype: generic
