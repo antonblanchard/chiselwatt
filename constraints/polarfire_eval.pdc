@@ -1,0 +1,9 @@
+set_io -port_name {clock} -pin_name E25 -io_std LVCMOS18 -fixed true
+set_io -port_name {reset} -pin_name K22 -io_std LVCMOS18 -fixed true
+
+set_io -port_name {io_tx} -pin_name G17 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_rx} -pin_name H18 -io_std LVCMOS18 -fixed true
+
+set_io -port_name {io_terminate} -pin_name F22 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_ledB} -pin_name B26 -io_std LVCMOS18 -fixed true
+set_io -port_name {io_ledC} -pin_name C26 -io_std LVCMOS18 -fixed true

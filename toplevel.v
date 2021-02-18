@@ -14,7 +14,7 @@ module toplevel #(
   reg reset_out;
   wire lock;
 
-  pll chiselwatt_pll(
+  Chiselwatt_pll chiselwatt_pll(
     .clki(clock),
     .clko(clock_out),
     .lock(lock)
