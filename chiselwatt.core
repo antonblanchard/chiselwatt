@@ -49,7 +49,10 @@ filesets:
   polarfireeval:
     files:
       - constraints/polarfire_eval.pdc: { file_type: PDC }
+      - constraints/polarfire_eval.sdc: { file_type: SDC }
       - pll/pll_polarfire50MHz.v: { file_type: verilogSource }
+      - scripts/libero-post-instructions.txt:
+          { file_type: user, copyto: post-instructions.txt }
 
 targets:
   cmod_a7-35:
@@ -99,7 +102,9 @@ targets:
   polarfireeval: &polarfireeval
     default_tool: libero
     description: Microsemi Polarfire Evaluation Kit
-    filesets: [core, polarfireeval, micropython]
+    filesets: [core, polarfireeval, helloworld]
+    hooks:
+      post_run: [libero_post]
     tools:
       libero: &liberoMPF300
         family: PolarFire
@@ -119,3 +124,7 @@ parameters:
     datatype: bool
     description: External reset button polarity
     paramtype: generic
+
+scripts:
+  libero_post:
+    cmd: ["python3", "-c", "print(open('post-instructions.txt','r').read())"]
