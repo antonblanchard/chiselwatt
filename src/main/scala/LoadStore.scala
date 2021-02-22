@@ -150,6 +150,26 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
         data := d.zeroExtend(length)
       }
 
+      /* Syscon */
+      when (addr(31, 8) === "hc00000".U) {
+        when (addr(7, 0) === "h00".U) {
+          /* SYS_REG_SIGNATURE */
+          data := "hf00daa5500010001".U
+        }
+        when (addr(7, 0) === "h08".U) {
+          /*
+           * SYS_REG_INFO
+           *  SYS_REG_INFO_HAS_UART is true
+           *  Other bits are false
+           */
+          data := "h1".U
+        }
+        when (addr(7, 0) === "h20".U) {
+          /* SYS_REG_CLKINFO */
+          data := 50000000.U
+        }
+      }
+
       /* UART */
       when (addr(31, 8) === "hc00020".U) {
         when (addr(7, 0) === "h08".U) {
