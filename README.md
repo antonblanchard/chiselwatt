@@ -2,31 +2,27 @@
 
 A tiny POWER Open ISA soft processor written in Chisel.
 
+## Getting chiselwatt
+
+* Grab the latest version of chiselwatt from github:
+
+```sh
+git clone https://github.com/antonblanchard/chiselwatt
+cd chiselwatt
+```
+
 ## Simulation using verilator
 
 * Chiselwatt uses `verilator` for simulation. It is built by default and run in
 a Docker container. To build with local verilator install, edit `Makefile`.
 
-* First build chiselwatt:
-
-```sh
-git clone https://github.com/antonblanchard/chiselwatt
-cd chiselwatt
-make
-```
-
 * The micropython and hello_world sample images are included in the repo. To use
-it, link the memory image into chiselwatt:
+either, uncomment the relevant `MEMORY_SIZE` and `RAM_INIT_FILE` lines in the Makefile.
+
+* Then build and simulate chiselwatt with:
 
 ```sh
-ln -s samples/binaries/micropython/firmware.hex insns.hex
-# or to use the hello_world sample, run
-ln -s samples/binaries/hello_world/hello_world.hex insns.hex
-```
-
-* Now run chiselwatt:
-
-```sh
+make
 ./chiselwatt
 ```
 
@@ -50,18 +46,8 @@ just adjust it in `Makefile`, `DOCKER=podman`.
 
 ### hello_world
 
-The `hello_world` example should run everywhere, so start with it.
-Edit `src/main/scala/Core.scala` and set memory to 16 kB (`16*1024`):
-
-```scala
-  (new ChiselStage).emitVerilog(new Core(64, 16*1024, "insns.hex", 0x0))
-```
-
-Then link in the hello_world image:
-
-```sh
-ln -s samples/binaries/hello_world/hello_world.hex insns.hex
-```
+The `hello_world` example should run everywhere, so start with it. Uncomment the
+relevant `MEMORY_SIZE` and `RAM_INIT_FILE` lines in the Makefile.
 
 ### Building and programming the FPGA
 
@@ -75,16 +61,19 @@ The `Makefile` currently supports the following FPGA boards by defining the `ECP
 For example, to build for the Evaluation Board, run:
 
 ```sh
+make clean
 make ECP5_BOARD=evn synth
 ```
 
 and to program the FPGA:
 
 ```sh
+make clean
 make ECP5_BOARD=evn prog
 
 # or if your USB device has a different path, pass it on USBDEVICE, like:
 
+make clean
 make ECP5_BOARD=evn USBDEVICE=/dev/tty.usbserial-120001 prog
 ```
 
@@ -105,27 +94,20 @@ This means we use twice as much block RAM as you would expect. This also means
 Micropython won't fit on an ECP5 85F, because the ~400kB of available BRAM is halved
 to ~200k. Micropython requires 384 kB.
 
-**Once this is fixed**, edit `src/main/scala/Core.scala` and set memory to 384 kB (`384*1024`):
+**Once this is fixed**, uncomment the relevant `MEMORY_SIZE` and `RAM_INIT_FILE` lines in the Makefile
 
-```scala
-chisel3.Driver.execute(Array[String](), () => new Core(64, 384*1024, "insns.hex", 0x0))
-```
-
-Then link in the micropython image:
-
-```sh
-ln -s samples/binaries/micropython/firmware.hex insns.hex
-```
 
 For example, to build for the ULX3S, run:
 
 ```sh
+make clean
 make ECP5_BOARD=ulx3s synth`
 ```
 
 and to program the FPGA:
 
 ```sh
+make clean
 make ECP5_BOARD=ulx3s prog
 ```
 
