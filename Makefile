@@ -119,20 +119,26 @@ apps_dir = ./samples
 
 hello_world:
 	docker run -it --rm -w /build -v $(PWD):/build carlosedp/crossbuild-ppc64le make -C $(apps_dir)/hello_world
-	@scripts/bin2hex.py $(apps_dir)/hello_world/hello_world.bin > ./insns.hex
+	@cp -R $(apps_dir)/hello_world/hello_world.elf $(apps_dir)/binaries/hello_world
+	@cp -R $(apps_dir)/hello_world/hello_world.bin $(apps_dir)/binaries/hello_world
+	@scripts/bin2hex.py $(apps_dir)/binaries/hello_world/hello_world.bin > $(apps_dir)/binaries/hello_world/hello_world.hex
+	@ln -sf $(apps_dir)/binaries/hello_world/hello_world.hex ./insns.hex
 
 micropython:
-	@if [ ! -d "$(apps_dir)/micropyton/ports/powerpc" ] ; then \
-		rm -rf $(apps_dir)/micropyton; \
-		echo "Cloning micropython repo into $(apps_dir)/micropyton"; \
-		git clone https://github.com/micropython/micropython.git $(apps_dir)/micropyton; \
+	@if [ ! -d "$(apps_dir)/micropython/ports/powerpc" ] ; then \
+		rm -rf $(apps_dir)/micropython; \
+		echo "Cloning micropython repo into $(apps_dir)/micropython"; \
+		git clone https://github.com/micropython/micropython.git $(apps_dir)/micropython; \
 	else \
 		echo "Micropython repo exists, updating..."; \
-		cd "$(apps_dir)/micropyton"; \
+		pushd "$(apps_dir)/micropython"; \
 		git pull; \
+		popd; \
 	fi
-	@docker run -it --rm -v $(PWD):/build carlosedp/crossbuild-ppc64le make -C $(apps_dir)/micropyton/ports/powerpc
-	@scripts/bin2hex.py $(apps_dir)/micropyton/ports/powerpc/build/firmware.bin > ./insns.hex
+	@docker run -it --rm -v $(PWD):/build carlosedp/crossbuild-ppc64le make -C $(apps_dir)/micropython/ports/powerpc
+	@cp $(apps_dir)/micropython/ports/powerpc/build/firmware.bin $(apps_dir)/binaries/micropython
+	@cp $(apps_dir)/micropython/ports/powerpc/build/firmware.elf $(apps_dir)/binaries/micropython
+	@scripts/bin2hex.py $(apps_dir)/binaries/micropython/firmware.bin > $(apps_dir)/binaries/micropython/firmware.hex
 
 clean:
 	@rm -f Core.fir firrtl_black_box_resource_files.f Core.v Core.anno.json MemoryBlackBox.v

@@ -1,8 +1,8 @@
 # build with docker build -t REPO/crossbuild-ppc64le -f Dockerfile.crossbuild-ppc64le .
-FROM debian:buster
+FROM python:3-buster
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV TOOLCHAIN_URL https://toolchains.bootlin.com/downloads/releases/toolchains/powerpc64le-power8/tarballs/powerpc64le-power8--glibc--bleeding-edge-2020.02-2.tar.bz2
+ENV TOOLCHAIN_URL https://toolchains.bootlin.com/downloads/releases/toolchains/powerpc64le-power8/tarballs/powerpc64le-power8--glibc--bleeding-edge-2020.08-1.tar.bz2
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -24,7 +24,7 @@ RUN wget $TOOLCHAIN_URL && \
     tar vxf $(basename $TOOLCHAIN_URL) -C /opt/powerpc64le-toolchain --strip-components=1 && \
     rm -rf  $(basename $TOOLCHAIN_URL)
 
-ENV PATH /opt/powerpc64le-toolchain/bin:$PATH
+ENV PATH $PATH:/opt/powerpc64le-toolchain/bin
 ENV CROSS_COMPILE powerpc64le-linux-
 
 RUN powerpc64le-linux-gcc --version
