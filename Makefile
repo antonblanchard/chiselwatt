@@ -1,3 +1,15 @@
+# Hello world
+MEMORY_SIZE = 16384
+RAM_INIT_FILE = samples/binaries/hello_world/hello_world.hex
+
+# Micropython
+#MEMORY_SIZE = 393216
+#RAM_INIT_FILE = samples/binaries/micropython/firmware.hex
+
+BITS = 64
+RESET_ADDR = 0x0
+CLOCK_FREQ = 50000000
+
 # Use Docker images for synthesis and verilator
 DOCKER=docker
 #DOCKER=podman
@@ -74,7 +86,7 @@ endif
 all: chiselwatt
 
 $(verilog_files): $(scala_files)
-	scripts/mill chiselwatt.run
+	scripts/mill chiselwatt.run $(BITS) $(MEMORY_SIZE) $(RAM_INIT_FILE) $(RESET_ADDR) $(CLOCK_FREQ)
 
 $(verilator_binary): $(verilog_files) chiselwatt.cpp uart.c
 # Warnings disabled until we fix the Chisel issues

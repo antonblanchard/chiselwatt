@@ -445,5 +445,11 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int, clockFr
 }
 
 object CoreObj extends App {
-  (new ChiselStage).emitVerilog(new Core(64, 384*1024, "insns.hex", 0x0, 50000000))
+  val bits: Int = args(0).toInt
+  val memSize: Int = Integer.decode(args(1))
+  val memFileName: String = args(2)
+  val resetAddr: Int = Integer.decode(args(3))
+  val clockFreq: Int = args(4).toInt
+
+  (new ChiselStage).emitVerilog(new Core(bits, memSize, memFileName, resetAddr, clockFreq))
 }
