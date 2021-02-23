@@ -6,7 +6,7 @@ import Control._
 import Helpers._
 import InstructionHelpers._
 
-class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends Module {
+class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int, clockFreq: Int) extends Module {
   val io = IO(new Bundle {
     val tx = Output(UInt(1.W))
     val rx = Input(UInt(1.W))
@@ -40,7 +40,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
   val multiplier = Module(new SimpleMultiplier(bits))
   val divider = Module(new SimpleDivider(bits))
   val mem = Module(new MemoryBlackBoxWrapper(bits, memWords, memFileName))
-  val loadStore = Module(new LoadStore(bits, memWords))
+  val loadStore = Module(new LoadStore(bits, memWords, clockFreq))
   val control = Module(new Control(bits))
 
   val regFile = Module(new RegisterFile(32, bits, 3, 1, false))
@@ -445,5 +445,5 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int) extends
 }
 
 object CoreObj extends App {
-  (new ChiselStage).emitVerilog(new Core(64, 384*1024, "insns.hex", 0x0))
+  (new ChiselStage).emitVerilog(new Core(64, 384*1024, "insns.hex", 0x0, 50000000))
 }

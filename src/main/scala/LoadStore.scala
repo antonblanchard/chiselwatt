@@ -32,7 +32,7 @@ class LoadStoreInput(val bits: Int) extends Bundle {
  *   2C: form store mask, store data
  */
 
-class LoadStore(val bits: Int, val words: Int) extends Module {
+class LoadStore(val bits: Int, val words: Int, val clockFreq: Int) extends Module {
   val io = IO(new Bundle {
     val in  = Flipped(Valid(new LoadStoreInput(bits)))
     val out = Output(Valid(UInt(bits.W)))
@@ -150,6 +150,26 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
         data := d.zeroExtend(length)
       }
 
+      /* Syscon */
+      when (addr(31, 8) === "hc00000".U) {
+        when (addr(7, 0) === "h00".U) {
+          /* SYS_REG_SIGNATURE */
+          data := "hf00daa5500010001".U
+        }
+        when (addr(7, 0) === "h08".U) {
+          /*
+           * SYS_REG_INFO
+           *  SYS_REG_INFO_HAS_UART is true
+           *  Other bits are false
+           */
+          data := "h1".U
+        }
+        when (addr(7, 0) === "h20".U) {
+          /* SYS_REG_CLKINFO */
+          data := clockFreq.asUInt(bits.W)
+        }
+      }
+
       /* UART */
       when (addr(31, 8) === "hc00020".U) {
         when (addr(7, 0) === "h08".U) {
@@ -183,13 +203,13 @@ class LoadStore(val bits: Int, val words: Int) extends Module {
   }
 }
 
-class LoadStoreWrapper(val bits: Int, val size: Int, filename: String) extends Module {
+class LoadStoreWrapper(val bits: Int, val size: Int, val clockFreq: Int, filename: String) extends Module {
   val io = IO(new Bundle {
     val in  = Flipped(Valid(new LoadStoreInput(bits)))
     val out = Output(Valid(UInt(bits.W)))
   })
 
-  val loadStore = Module(new LoadStore(bits, size/(bits/8)))
+  val loadStore = Module(new LoadStore(bits, size/(bits/8), clockFreq))
   val mem = Module(new MemoryBlackBoxWrapper(bits, size/(bits/8), filename))
 
   io.in <> loadStore.io.in
@@ -206,5 +226,5 @@ class LoadStoreWrapper(val bits: Int, val size: Int, filename: String) extends M
 }
 
 object LoadStoreObj extends App {
-  (new ChiselStage).emitVerilog(new LoadStoreWrapper(64, 128*1024, "test.hex"))
+  (new ChiselStage).emitVerilog(new LoadStoreWrapper(64, 128*1024, 50000000, "test.hex"))
 }
