@@ -9,7 +9,9 @@
 
 static uint64_t potato_uart_base;
 
-#define PROC_FREQ 50000000
+#define SYSCON_BASE 0xc0000000 /* System control regs */
+#define SYS_REG_CLKINFO 0x20
+
 #define UART_FREQ 115200
 #define UART_BASE 0xc0002000
 
@@ -93,9 +95,11 @@ static unsigned long potato_uart_divisor(unsigned long proc_freq, unsigned long 
 
 void potato_uart_init(void)
 {
+	uint64_t proc_freq;
 	potato_uart_base = UART_BASE;
 
-	potato_uart_reg_write(POTATO_CONSOLE_CLOCK_DIV, potato_uart_divisor(PROC_FREQ, UART_FREQ));
+	proc_freq = *(volatile uint64_t *)(SYSCON_BASE + SYS_REG_CLKINFO);
+	potato_uart_reg_write(POTATO_CONSOLE_CLOCK_DIV, potato_uart_divisor(proc_freq, UART_FREQ));
 }
 
 int getchar(void)
