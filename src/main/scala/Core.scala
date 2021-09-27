@@ -59,7 +59,7 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int, clockFr
 
   /* Blink an LED, this proves we are out of reset */
   val led = RegInit(0.U(1.W))
-  val (counterValue, counterWrap) = Counter(true.B, 50000000)
+  val (counterValue, counterWrap) = Counter(true.B, clockFreq)
   when (counterWrap) {
     led := ~led
   }

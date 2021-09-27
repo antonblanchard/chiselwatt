@@ -41,29 +41,72 @@ make dockerlator
 exit
 ```
 
-## Synthesizing for FPGAs using Open Source tools (yosys/nextpnr)
+## Synthesizing for FPGAs
 
-Synthesis on FPGAs is supported with yosys/nextpnr. At the moment the tools support
-Lattice ECP5 FPGAs. The build process uses Docker images, so no software other
-than Docker needs to be installed. If you prefer podman you can use that too,
-just adjust it in `Makefile`, `DOCKER=podman`.
+Synthesis on FPGAs is supported with [Fusesoc](https://github.com/olofk/fusesoc) to enable multiple targets and EDA backends. Fusesoc works with Edalize to provide package management and backend build for multiple FPGA vendors. At the moment the Chiselwatt supports some Xilinx, Lattice and Microchip FPGAs.
 
-### hello_world
+There is also a  build process using Makefiles and Docker images, so no software other than Docker needs to be installed. If you prefer podman you can use that too, just adjust it in `Makefile`, `DOCKER=podman`.
+
+### Using Fusesoc
+
+Install Fusesoc with Python3 pip:
+
+```sh
+pip3 install fusesoc
+```
+
+Create a workspace and add Chiselwatt as a library:
+
+```sh
+mkdir workspace
+cd workspace
+
+fusesoc library add chiselwatt https://github.com/antonblanchard/chiselwatt
+
+fusesoc core list
+```
+
+Show all available targets:
+
+```sh
+fusesoc core show chiselwatt
+```
+
+Adjust memory requirements:
 
 The `hello_world` example should run everywhere, so start with it.
 Edit `src/main/scala/Core.scala` and set memory to 16 kB (`16*1024`):
 
 ```scala
-  (new ChiselStage).emitVerilog(new Core(64, 16*1024, "insns.hex", 0x0))
+  (new ChiselStage).emitVerilog(new Core(64, 16*1024, "insns.hex", 0x0, 50000000))
 ```
 
-Then link in the hello_world image:
+Build Chiselwatt (using mill, requires Java):
+
+```sh
+pushd fusesoc_libraries/chiselwatt
+# Link Hello World sample application
+ln -sf ./samples/binaries/hello_world/hello_world.hex ./insns.hex
+make
+popd
+
+# Build the project files for your target
+fusesoc run --target=polarfireeval_es chiselwatt
+```
+
+If you have the EDA tools installed, your core will be built, otherwise the project files will be placed in `build` directory.
+
+Some FPGA's, mainly Lattice using Yosys/NextPNR have a memory synthesys issue that restricts the use of Micropython.[see  here](#Micropython).
+
+### Using the Makefile to build using Open Source tools (yosys/nextpnr)
+
+Link in the hello_world image:
 
 ```sh
 ln -s samples/binaries/hello_world/hello_world.hex insns.hex
 ```
 
-### Building and programming the FPGA
+#### Building and programming the FPGA
 
 The `Makefile` currently supports the following FPGA boards by defining the `ECP5_BOARD` parameter on make:
 
@@ -96,7 +139,7 @@ After programming, if you connect to the serial port of the FPGA at 115200 8n1, 
 and after that all input will be echoed to the output. On Linux, picocom can be used.
 Another option below is a simple python script.
 
-### Micropython
+#### Micropython
 
 Unfortunately due to an issue in yosys/nextpnr, dual port RAMs are not
 working. More details can be found in <https://github.com/YosysHQ/yosys/issues/1101>.
