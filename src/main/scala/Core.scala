@@ -411,11 +411,11 @@ class Core(bits: Int, memSize: Int, memFileName: String, resetAddr: Int, clockFr
   when (wbLoadStoreRegValid) {
     regFile.io.wr(0).bits.addr := wbLoadStoreRegAddr
     regFile.io.wr(0).bits.data := memAdderOut
-    regFile.io.wr(0).fire() := true.B
+    regFile.io.wr(0).valid := true.B
   }. otherwise {
     regFile.io.wr(0).bits.addr := wbRegAddr
     regFile.io.wr(0).bits.data := wbRegData2
-    regFile.io.wr(0).fire() := (wbFast && wbRegValid) || multiplier.io.out.valid || divider.io.out.valid
+    regFile.io.wr(0).valid := (wbFast && wbRegValid) || multiplier.io.out.valid || divider.io.out.valid
   }
 
   when (wbFast && wbCarryValid) {

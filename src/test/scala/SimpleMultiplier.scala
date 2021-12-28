@@ -1,10 +1,9 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
-
+import chiseltest._
 import TestValues._
+import org.scalatest.flatspec.AnyFlatSpec
 
-class SimpleMultiplierUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class SimpleMultiplierUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "SimpleMultiplier"
 
   val tests = for {

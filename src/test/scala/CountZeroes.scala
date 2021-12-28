@@ -1,10 +1,9 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
-
+import chiseltest._
 import TestValues._
+import org.scalatest.flatspec.AnyFlatSpec
 
-class CountZeroesUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class CountZeroesUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "CountZeroes"
   it should "pass a unit test" in {
     test(new CountZeroes(64)) { c =>

@@ -1,12 +1,8 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
+import chiseltest._
+import org.scalatest.flatspec.AnyFlatSpec
 
-import chiseltest.experimental.TestOptionBuilder._
-
-import treadle.{WriteVcdAnnotation}
-
-class UartUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class UartUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Uart"
 
   val rxOverclock = 16
