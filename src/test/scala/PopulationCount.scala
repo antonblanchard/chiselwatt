@@ -1,11 +1,10 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
-
+import chiseltest._
 import Control._
 import TestValues._
+import org.scalatest.flatspec.AnyFlatSpec
 
-class PopulationCountUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class PopulationCountUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "PopulationCount"
 
   private def popcntb(x: BigInt): BigInt = {

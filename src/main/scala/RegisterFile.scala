@@ -29,10 +29,10 @@ class RegisterFile(numRegs: Int, bits: Int, numReadPorts: Int, numWritePorts: In
   val regs = Mem(numRegs, UInt(bits.W))
 
   io.rd.foreach{i => i.data := regs.read(i.addr)}
-  io.wr.foreach{i => when (i.fire()) { regs.write(i.bits.addr, i.bits.data) } }
+  io.wr.foreach{i => when (i.fire) { regs.write(i.bits.addr, i.bits.data) } }
 
   if (bypass) {
-    io.rd.foreach{r => io.wr.foreach{w => when (w.fire() && w.bits.addr === r.addr) { r.data := w.bits.data } } }
+    io.rd.foreach{r => io.wr.foreach{w => when (w.fire && w.bits.addr === r.addr) { r.data := w.bits.data } } }
   }
 }
 

@@ -1,19 +1,13 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
-
-import chiseltest.experimental.TestOptionBuilder._
-import chiseltest.internal.{VerilatorBackendAnnotation, WriteVcdAnnotation}
-
-import treadle.executable.ClockInfo
-import treadle.{ClockInfoAnnotation}
-
+import chiseltest._
 import Control._
+import org.scalatest.flatspec.AnyFlatSpec
 
-class LoadStoreUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class LoadStoreUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   val bits = 64
   val words = 1024
   val filename = "LoadStoreInsns.hex"
+  val frequency = 50000000
 
   private def doOneRead(m: LoadStoreWrapper, a: UInt, b: UInt, length: UInt, signed: UInt, byteReverse: UInt, expected: UInt) = {
       m.io.in.bits.a.poke(a)
@@ -65,7 +59,8 @@ class LoadStoreUnitTester extends FlatSpec with ChiselScalatestTester with Match
 
   behavior of "LoadStore"
   it should "pass a unit test" in {
-    test(new LoadStoreWrapper(bits, words, filename)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation, ClockInfoAnnotation(Seq(ClockInfo(period = 2))))) { m =>
+    test(new LoadStoreWrapper(bits, words, frequency, filename))
+      .withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { m =>
 
       doOneRead(m, 0.U, 0.U, LEN_1B, 0.U, 0.U, "h07".U)
       doOneRead(m, 0.U, 0.U, LEN_2B, 0.U, 0.U, "h0607".U)

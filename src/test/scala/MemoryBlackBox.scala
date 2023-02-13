@@ -1,15 +1,8 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
+import chiseltest._
+import org.scalatest.flatspec.AnyFlatSpec
 
-import chiseltest.experimental.TestOptionBuilder._
-import chiseltest.internal.{VerilatorBackendAnnotation, WriteVcdAnnotation}
-
-import treadle.executable.ClockInfo
-import treadle.{ClockInfoAnnotation}
-
-
-class MemoryBlackBoxUnitTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class MemoryBlackBoxUnitTester extends AnyFlatSpec with ChiselScalatestTester {
   val bits = 64
   val words = 1024
   val filename = "MemoryBlackBoxInsns.hex"
@@ -18,7 +11,7 @@ class MemoryBlackBoxUnitTester extends FlatSpec with ChiselScalatestTester with 
 
   behavior of "MemoryBlackBox"
   it should "pass a unit test" in {
-    test(new MemoryBlackBoxWrapper(bits, words, filename)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation, ClockInfoAnnotation(Seq(ClockInfo(period = 2))))) { m =>
+    test(new MemoryBlackBoxWrapper(bits, words, filename)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { m =>
 
       m.io.fetchPort.addr.poke(0.U)
 

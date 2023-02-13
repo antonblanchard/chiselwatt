@@ -1,10 +1,9 @@
-import org.scalatest._
-import chisel3.tester._
 import chisel3._
-
+import chiseltest._
 import Control._
+import org.scalatest.flatspec.AnyFlatSpec
 
-class LoadStoreByteReverseTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class LoadStoreByteReverseTester extends AnyFlatSpec with ChiselScalatestTester  {
   val x = BigInt("0123456789ABCDEF", 16)
   val bits = 64
 
