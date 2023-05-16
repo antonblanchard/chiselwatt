@@ -5,7 +5,7 @@ A tiny POWER Open ISA soft processor written in Chisel.
 ## Simulation using verilator
 
 * Chiselwatt uses `verilator` for simulation. It is built by default and run in
-a Docker container. To build with local verilator install, edit `Makefile`.
+a Docker container. To build with local verilator install, run ``make -f local.mk``.
 
 * First build chiselwatt:
 
